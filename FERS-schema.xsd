@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    
+    <xsd:element name="simulation">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="parameters">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="starttime" type="xsd:string"/>
+                            <xsd:element name="endtime" type="xsd:string"/>
+                            <xsd:element name="c" type="xsd:string"/>
+                            <xsd:element name="rate" type="xsd:string"/>
+                            <xsd:element name="export">
+                                <xsd:complexType>
+                                    <xsd:simpleContent>
+                                        <xsd:extension base="xsd:string">
+                                            <xsd:attribute name="csv" type="xsd:boolean"/>
+                                            <xsd:attribute name="binary" type="xsd:boolean"/>
+                                            <xsd:attribute name="csvbinary" type="xsd:boolean"/>
+                                        </xsd:extension>
+                                    </xsd:simpleContent>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="interprate" type="xsd:string"/>
+                            <xsd:element name="randomseed" type="xsd:string"/>
+                            <xsd:element name="adc_bits" type="xsd:string"/>
+                            <xsd:element name="oversample" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="target">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="rcs">
+                                <xsd:complexType>
+                                    <xsd:simpleContent>
+                                        <xsd:extension base="xsd:string">
+                                            <xsd:attribute name="type" type="xsd:string"/>
+                                        </xsd:extension>
+                                    </xsd:simpleContent>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="model" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="antenna">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="efficiency" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="pattern" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="receiver">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="window_skip" type="xsd:string"/>
+                            <xsd:element name="window_length" type="xsd:string"/>
+                            <xsd:element name="prf" type="xsd:string"/>
+                            <xsd:element name="noise_temp" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="antenna" type="xsd:string"/>
+                        <xsd:attribute name="timing" type="xsd:string"/>
+                        <xsd:attribute name="nodirect" type="xsd:boolean"/>
+                        <xsd:attribute name="nopropagationloss" type="xsd:boolean"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    
+</xsd:schema>
