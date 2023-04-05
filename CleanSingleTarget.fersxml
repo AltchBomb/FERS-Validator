@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!--Simulation using actual postision in UTM, Constantiaberg Tx, Malmesbury Rx, Target flying in straight line approximately from Ceres to the airport-->
+<!--Run 'xmllint --format --recover CleanSingleTarget.fersxml --output CleanSingleTarget.fersxml' to indent file-->
+<!DOCTYPE simulation SYSTEM "../../fers-xml.dtd">
+<simulation name="Basic1Taget">
+  <parameters>
+    <starttime>0</starttime>
+    <endtime>180</endtime>
+    <c>299792458</c>
+    <rate>204800</rate>
+    <adc_bits>16</adc_bits>
+    <interprate>1000</interprate>
+    <oversample>1</oversample>
+    <export binary="true" csv="false" xml="false"/>
+  </parameters>
+  <pulse name="TxWaveform" type="file" filename="../../../Waveforms/txWaveFormNormalised.h5">
+    <power>16400</power> <!-- 10 kW * 2.15 dB (to create EIRP of dipole type pattern) -->
+    <carrier>89e6</carrier>
+  </pulse>
+  <timing name="TxClock">
+    <frequency>204800</frequency>
+      </timing>
+ <timing name="RxClock">
+    <frequency>204800</frequency>
+    <random_freq_offset>0.01</random_freq_offset><!-- Approximately 50 ppb, typical for good OCXO -->
+  </timing>
+  <antenna name="RxYagiAntenna" pattern="sinc">
+    <efficiency>1</efficiency>
+    <alpha>5.2481</alpha><!-- 7.2 dBi -->
+    <beta>2</beta>
+    <gamma>3.6</gamma>
+  </antenna>
+  <antenna name="TxIsoAntenna" pattern="isotropic">
+    <efficiency>1</efficiency>
+  </antenna>
+  <!-- TxRxBaseLine is 74460m for ConstantiabergTx to MalmesburyRx-->
+  <platform name="ContantiabergTxPlatform">
+    <motionpath interpolation="static">
+      <positionwaypoint>
+        <x>258804.41</x>
+        <y>6228720.84</y>
+        <altitude>397</altitude>
+        <time>0</time>
+      </positionwaypoint>
+    </motionpath>
+    <fixedrotation>
+      <startazimuth>0</startazimuth>
+      <startelevation>0</startelevation>
+      <azimuthrate>0</azimuthrate>
+      <elevationrate>0</elevationrate>
+    </fixedrotation>
+    <transmitter name="ConstantiabergTx" type="continuous" antenna="TxIsoAntenna" pulse="TxWaveform" timing="TxClock">
+      <prf>0.001</prf>
+    </transmitter>
+  </platform>
+  <platform name="MalmesburyRefRxPlatform">
+    <motionpath interpolation="static">
+      <positionwaypoint>
+        <x>287942.01</x>
+        <y>6297267.09</y>
+        <altitude>241</altitude>
+	<time>0</time>
+      </positionwaypoint>
+    </motionpath>
+    <fixedrotation>
+      <startazimuth>204.2</startazimuth><!-- towards Constantiaberg -->
+      <startelevation>0</startelevation><!-- horizontal -->
+      <azimuthrate>0</azimuthrate>
+      <elevationrate>0</elevationrate>
+    </fixedrotation>
+    <receiver name="MalmesburyRefRx" type="continuous" antenna="RxYagiAntenna" timing="RxClock">
+      <prf>0.001</prf>
+      <window_skip>0</window_skip>
+      <window_length>180</window_length>
+      <noise_temp>438.4</noise_temp><!--4 dB NF as per the minimal frontend -->
+    </receiver>
+  </platform>
+  <platform name="MalmesburySurvRxPlatform">
+    <motionpath interpolation="static">
+      <positionwaypoint>
+        <x>287946.01</x><!-- 6m East of ref antenna (to be pedantic) -->
+        <y>6297267.09</y>
+        <altitude>241</altitude>
+        <time>0</time>
+      </positionwaypoint>
+    </motionpath>
+    <fixedrotation>
+      <startazimuth>125</startazimuth><!-- towards middle of flight path -->
+      <startelevation>10</startelevation><!-- slight upwards -->
+      <azimuthrate>0</azimuthrate>
+      <elevationrate>0</elevationrate>
+    </fixedrotation>
+    <receiver name="MalmesburySurvRx" type="continuous" antenna="RxYagiAntenna" timing="RxClock">
+      <prf>0.001</prf>
+      <window_skip>0</window_skip>
+      <window_length>180</window_length>
+      <noise_temp>438.4</noise_temp><!--4 dB NF as per the minimal frontend -->
+    </receiver>
+  </platform>
+  <platform name="target1Platform">
+    <motionpath interpolation="linear">
+	<positionwaypoint>
+        <x>331995.77</x>
+        <y>6291261.10</y>
+        <altitude>10000.00</altitude>
+        <time>0</time>
+      </positionwaypoint>
+      <positionwaypoint>
+        <x>305242.56</x>
+        <y>6267172.40</y>
+        <altitude>5000.00</altitude>
+        <time>180</time>
+      </positionwaypoint>
+      <!--
+	<positionwaypoint><!-- Airport - ->
+        <x>278242.56</x>
+        <y>6239697.48</y>
+        <altitude>1900.00</altitude>
+        <time>180.00</time>
+      </positionwaypoint>
+	-->
+    </motionpath>
+    <fixedrotation>
+      <startazimuth>0.0</startazimuth>
+      <startelevation>0.0</startelevation>
+      <azimuthrate>0</azimuthrate>
+      <elevationrate>0</elevationrate>
+    </fixedrotation>
+    <target name="Target1">
+      <rcs type="isotropic">
+        <value>200</value>
+      </rcs>
+    </target>
+  </platform>
+</simulation>

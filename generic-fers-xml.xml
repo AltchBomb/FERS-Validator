@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simulation name="example-sim">
+
+    <parameters>
+        <starttime>start_time </starttime>
+        <endtime>end_time</endtime>
+        <c>speed_of_light</c>
+        <rate>export_sampling_rate</rate>
+        <export csv="(bool)" binary="()bool" csvbinary="(bool)"/>
+        <interprate>cw_interpolation_rate</interprate>
+        <randomseed>seed_for_PRNG</randomseed>
+        <adc_bits>number_of_adc_bits_to_sim</adc_bits>
+        <oversample>oversampling_ratio</oversample>
+    </parameters>
+
+    <target name="target_name">
+        <rcs type="rcs_type">rcs_value</rcs>
+        <model type="model_type"></model>
+    </target>
+
+    <antenna name="antenna_name" pattern="gain_pattern">
+        <efficiency>ant_efficiency</efficiency>
+    </antenna>
+
+    <receiver name="receiver_name" antenna="antenna_name" timing="clock_name" nodirect="(bool)" nopropagationloss="(bool)">
+        <window_skip>skip_time</window_skip>
+        <window_length>receive_window_length</window_length>
+        <prf>pulse_repetition_freq</prf>
+        <noise_temp>receiver_temp</noise_temp>
+    </receiver>
+
+    <pulse name="pulse_name" type="model_type" filename="/path/to/file">
+        <power>pulse_power</power>
+        <carrier>carrier_freq</carrier>
+    </pulse>
+
+    <timing name="clock_name" synconpulse="(bool)">
+        <frequency>clock_freq</frequency> 	        <!-- [Hz] -->
+        <noise_entry>
+        <alpha>alpha_value</alpha>
+        <weight>noise_intensity</weight>                  <!-- [dBc/Hz] -->
+        </noise_entry>
+        <freq_offset>frequency_offset</freq_offset> 	<!-- [Hz] -->
+        <phase_offset>phase_offset</phase_offset> 	<!-- [radians] -->
+    </timing>
+
+    <transmitter name="trans_name" type="trans_type" pulse="pulse_name" antenna="antenna_name" timing="clock_name">
+        <prf>pulse_repetition_frequency</prf>
+    </transmitter>
+
+    <multipath>
+        <factor>roughness_factor</factor>
+        <nx>a</nx>
+        <ny>b</ny>
+        <nz>c</nz>
+        <d>d</d>
+    </multipath>
+
+    <monostatic name="mono_name" type="trans_type" antenna="antenna_name" pulse="pulse_name" timing="clock_name">
+        <window_skip>skip_time</window_skip>
+        <window_length>recv_window_length</window_length>
+        <prf>pulse_repetition_freq</prf>
+    </monostatic>
+
+    <platform name="platform_name" interpolation="interpolation_type">
+        <motionpath interpolation="interpolation_type">
+            <positionwaypoint>
+                <x>x_position_0</x>
+                <y>y_position_0</y>
+                <altitude>altitude_0</altitude>
+                <time>time_0</time>
+            </positionwaypoint>
+            <positionwaypoint>
+                <x>x_position_N</x>
+                <y>y_position_N</y>
+                <altitude>altitude_N</altitude>
+                <time>time_N</time>
+            </positionwaypoint>
+        </motionpath>
+        <fixedrotation>
+            <startazimuth>initial_azimuth_angle</startazimuth>
+            <azimuthrate>azimuth_angular_velocity</azimuthrate>
+            <startelevation>initial_elevation</startelevation>
+            <elevationrate>elevation_angular_velocity</elevationrate>
+        </fixedrotation>
+        <rotationwaypoint>
+            <elevation>elevation_angle_0</elevation>
+            <azimuth>azimuth_angle_0</azimuth>
+            <time>time_0</time>
+        </rotationwaypoint>
+        <rotationwaypoint>
+            <elevation>elevation_angle_N</elevation>
+            <azimuth>azimuth_angle_N</azimuth>
+            <time>time_N</time>
+        </rotationwaypoint>
+    </platform>
+
+    <platform name="platform_name">
+        <fixedrotation>
+         <startazimuth>initial_azimuth_angle</startazimuth>
+         <azimuthrate>azimuth_angular_velocity</azimuthrate>
+         <startelevation>initial_elevation</startelevation>
+         <elevationrate>elevation_angular_velocity</elevationrate>
+        </fixedrotation>
+    </platform>
+
+    <!-- XML Gain Patterns -->
+    <elevation>
+        <gain>gain_sample0</gain>
+        <angle>angle0</angle>
+        <gain>gain_sampleN</gain>
+        <angle>angleN</angle>
+    </elevation>
+      
+    <azimuth>
+        <gain>gain_sample0</gain>
+        <angle>angle0</angle>
+        <gain>gain_sampleN</gain>
+        <angle>angleN</angle>
+    </azimuth>
+
+</simulation>
