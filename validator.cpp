@@ -22,6 +22,24 @@
 using namespace xercesc;
 using namespace std;
 
+// Error handler that catches validation errors and further provides information about the errors.
+class MyErrorHandler : public ErrorHandler {
+public:
+    void warning(const SAXParseException& e) {
+        cerr << "Warning: " << XMLString::transcode(e.getMessage()) << " at line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl;
+    }
+
+    void error(const SAXParseException& e) {
+        cerr << "Error: " << XMLString::transcode(e.getMessage()) << " at line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl;
+    }
+
+    void fatalError(const SAXParseException& e) {
+        cerr << "Fatal Error: " << XMLString::transcode(e.getMessage()) << " at line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl;
+    }
+
+    void resetErrors() {}
+};
+
 int main(int argc, char* argv[]) {
 
     try {
@@ -39,7 +57,25 @@ int main(int argc, char* argv[]) {
         parser.setDoSchema(true);
 
         // Set the custom XSD file for the parser by specifyng the XSD file path and XSD file name
-       parser.setExternalNoNamespaceSchemaLocation("schema.xsd");
+        parser.setExternalNoNamespaceSchemaLocation("schema-test.xsd");
+
+        /*
+        // Error handler which stops parsing on first error:
+        ErrorHandler* errorHandler = parser.getErrorHandler();
+        errorHandler->setExitOnFirstFatalError(true);
+
+        // Creating SchemaValidator object and setting it up with parser:
+        SchemaValidator validator(parser.getValidationContext());
+        validator.setErrorHandler(errorHandler);
+
+        // Validating the DOMDocument object:
+        validator.validate(parser.getDocument());
+        */
+
+        // error handler instance created and set on the parser.
+        MyErrorHandler errorHandler;
+        parser.setErrorHandler(&errorHandler);
+
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         parser.parse("sample1.xml");

@@ -95,15 +95,6 @@
         </rotationwaypoint>
     </platform>
 
-    <platform name="platform_name">
-        <fixedrotation>
-         <startazimuth>initial_azimuth_angle</startazimuth>
-         <azimuthrate>azimuth_angular_velocity</azimuthrate>
-         <startelevation>initial_elevation</startelevation>
-         <elevationrate>elevation_angular_velocity</elevationrate>
-        </fixedrotation>
-    </platform>
-
     <!-- XML Gain Patterns -->
     <elevation>
         <gain>gain_sample0</gain>

@@ -70,6 +70,133 @@
                         <xsd:attribute name="nopropagationloss" type="xsd:boolean"/>
                     </xsd:complexType>
                 </xsd:element>
+                <xsd:element name="pulse">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="power" type="xsd:string"/>
+                            <xsd:element name="carrier" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="type" type="xsd:string"/>
+                        <xsd:attribute name="filename" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="timing">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="frequency" type="xsd:string"/>
+                            <xsd:element name="noise_entry">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="alpha" type="xsd:string"/>
+                                        <xsd:element name="weight" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="freq_offset" type="xsd:string"/>
+                            <xsd:element name="phase_offset" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="synconpulse" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="transmitter">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="prf" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="type" type="xsd:string"/>
+                        <xsd:attribute name="pulse" type="xsd:string"/>
+                        <xsd:attribute name="antenna" type="xsd:string"/>
+                        <xsd:attribute name="timing" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="multipath">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="factor" type="xsd:string"/>
+                            <xsd:element name="nx" type="xsd:string"/>
+                            <xsd:element name="ny" type="xsd:string"/>
+                            <xsd:element name="nz" type="xsd:string"/>
+                            <xsd:element name="d" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="monostatic">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="window_skip" type="xsd:double"/>
+                            <xsd:element name="window_length" type="xsd:double"/>
+                            <xsd:element name="prf" type="xsd:double"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="type" type="xsd:string"/>
+                        <xsd:attribute name="antenna" type="xsd:string"/>
+                        <xsd:attribute name="pulse" type="xsd:string"/>
+                        <xsd:attribute name="timing" type="xsd:string"/>
+                 </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="platform">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                        <xsd:element name="motionpath">
+                            <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="positionwaypoint" maxOccurs="unbounded">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="x" type="xsd:double"/>
+                                            <xsd:element name="y" type="xsd:double"/>
+                                            <xsd:element name="altitude" type="xsd:double"/>
+                                            <xsd:element name="time" type="xsd:double"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                            </xsd:sequence>
+                            <xsd:attribute name="interpolation" type="xsd:string"/>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="fixedrotation">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="startazimuth" type="xsd:double"/>
+                                    <xsd:element name="azimuthrate" type="xsd:double"/>
+                                    <xsd:element name="startelevation" type="xsd:double"/>
+                                    <xsd:element name="elevationrate" type="xsd:double"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="rotationwaypoint" maxOccurs="unbounded">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="elevation" type="xsd:double"/>
+                                    <xsd:element name="azimuth" type="xsd:double"/>
+                                    <xsd:element name="time" type="xsd:double"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="interpolation" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="elevation">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="gain" type="xsd:string" minOccurs="2" maxOccurs="unbounded"/>
+                            <xsd:element name="angle" type="xsd:string" minOccurs="2" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="azimuth">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="gain" type="xsd:string" minOccurs="2" maxOccurs="unbounded"/>
+                            <xsd:element name="angle" type="xsd:string" minOccurs="2" maxOccurs="unbounded"/>
+                         </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
             </xsd:sequence>
             <xsd:attribute name="name" type="xsd:string"/>
         </xsd:complexType>
