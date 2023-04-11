@@ -20,4 +20,3 @@ validator: $(OBJS)
 
 clean:
 	$(RM) $(OBJS) validator
-

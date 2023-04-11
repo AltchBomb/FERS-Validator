@@ -5,6 +5,7 @@
 // The following implementation makes use of the Document Object Model (DOM) and a custom XSD Schema.
 
 #include <iostream>
+#include <fstream>
 
 // Including necessary Xerces-C++ header files:
 #include <xercesc/dom/DOM.hpp>
@@ -41,6 +42,9 @@ public:
 };
 
 int main(int argc, char* argv[]) {
+    
+    // Configuring command line tool for fers validator: $~ fers --validate <filename>
+    //const std::string filename(argv[1]);
 
     try {
 
@@ -57,7 +61,7 @@ int main(int argc, char* argv[]) {
         parser.setDoSchema(true);
 
         // Set the custom XSD file for the parser by specifyng the XSD file path and XSD file name
-        parser.setExternalNoNamespaceSchemaLocation("schema-test.xsd");
+        parser.setExternalNoNamespaceSchemaLocation("FERS-schema/schema-test.xsd");
 
         /*
         // Error handler which stops parsing on first error:
@@ -78,7 +82,8 @@ int main(int argc, char* argv[]) {
 
 
         // Establish a DOMDocument object and parse the input FERSXML file:
-        parser.parse("sample1.xml");
+        //parser.parse(filename.c_str());
+        parser.parse("FERSXML-example/generic-fers-xml.xml");
 
         if(parser.getErrorCount() == 0) {
                 std::cout << "XML document is valid" << std::endl;

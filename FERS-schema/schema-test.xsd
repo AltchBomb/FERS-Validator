@@ -1,0 +1,223 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="simulation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="parameters">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="starttime"/>
+              <xs:element type="xs:string" name="endtime"/>
+              <xs:element type="xs:string" name="c"/>
+              <xs:element type="xs:string" name="rate"/>
+              <xs:element name="export">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="csv"/>
+                      <xs:attribute type="xs:string" name="binary"/>
+                      <xs:attribute type="xs:string" name="csvbinary"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:string" name="interprate"/>
+              <xs:element type="xs:string" name="randomseed"/>
+              <xs:element type="xs:string" name="adc_bits"/>
+              <xs:element type="xs:string" name="oversample"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="target">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="rcs">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="type"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="model">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="type"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="antenna">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="efficiency"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="pattern"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="receiver">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="window_skip"/>
+              <xs:element type="xs:string" name="window_length"/>
+              <xs:element type="xs:string" name="prf"/>
+              <xs:element type="xs:string" name="noise_temp"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="antenna"/>
+            <xs:attribute type="xs:string" name="timing"/>
+            <xs:attribute type="xs:string" name="nodirect"/>
+            <xs:attribute type="xs:string" name="nopropagationloss"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="pulse">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="power"/>
+              <xs:element type="xs:string" name="carrier"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="type"/>
+            <xs:attribute type="xs:string" name="filename"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="timing">
+          <xs:annotation>
+            <xs:documentation> [radians] </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="frequency"/>
+              <xs:element name="noise_entry">
+                <xs:annotation>
+                  <xs:documentation> [Hz]  [dBc/Hz] </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="alpha"/>
+                    <xs:element type="xs:string" name="weight"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:string" name="freq_offset"/>
+              <xs:element type="xs:string" name="phase_offset">
+                <xs:annotation>
+                  <xs:documentation> [Hz] </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="synconpulse"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="transmitter">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="prf"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="type"/>
+            <xs:attribute type="xs:string" name="pulse"/>
+            <xs:attribute type="xs:string" name="antenna"/>
+            <xs:attribute type="xs:string" name="timing"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="multipath">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="factor"/>
+              <xs:element type="xs:string" name="nx"/>
+              <xs:element type="xs:string" name="ny"/>
+              <xs:element type="xs:string" name="nz"/>
+              <xs:element type="xs:string" name="d"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="monostatic">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="window_skip"/>
+              <xs:element type="xs:string" name="window_length"/>
+              <xs:element type="xs:string" name="prf"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="type"/>
+            <xs:attribute type="xs:string" name="antenna"/>
+            <xs:attribute type="xs:string" name="pulse"/>
+            <xs:attribute type="xs:string" name="timing"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="platform">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="motionpath">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="positionwaypoint" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="x"/>
+                          <xs:element type="xs:string" name="y"/>
+                          <xs:element type="xs:string" name="altitude"/>
+                          <xs:element type="xs:string" name="time"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="interpolation"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="fixedrotation">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="startazimuth"/>
+                    <xs:element type="xs:string" name="azimuthrate"/>
+                    <xs:element type="xs:string" name="startelevation"/>
+                    <xs:element type="xs:string" name="elevationrate"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="rotationwaypoint" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="elevation"/>
+                    <xs:element type="xs:string" name="azimuth"/>
+                    <xs:element type="xs:string" name="time"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="name"/>
+            <xs:attribute type="xs:string" name="interpolation"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="elevation">
+          <xs:annotation>
+            <xs:documentation> XML Gain Patterns </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+              <xs:element type="xs:string" name="gain"/>
+              <xs:element type="xs:string" name="angle"/>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="azimuth">
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+              <xs:element type="xs:string" name="gain"/>
+              <xs:element type="xs:string" name="angle"/>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="name"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE simulation SYSTEM "../fers-xml.dtd">
 <simulation name="example-sim">
 
     <parameters>
@@ -6,7 +7,7 @@
         <endtime>end_time</endtime>
         <c>speed_of_light</c>
         <rate>export_sampling_rate</rate>
-        <export csv="(bool)" binary="()bool" csvbinary="(bool)"/>
+        <export csv="(bool)" binary="(bool)" csvbinary="(bool)"/>
         <interprate>cw_interpolation_rate</interprate>
         <randomseed>seed_for_PRNG</randomseed>
         <adc_bits>number_of_adc_bits_to_sim</adc_bits>
