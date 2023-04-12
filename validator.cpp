@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         parser.setDoSchema(true);
 
         // Set the custom XSD file for the parser by specifyng the XSD file path and XSD file name
-        parser.setExternalNoNamespaceSchemaLocation("FERS-schema/schema-test.xsd");
+        parser.setExternalNoNamespaceSchemaLocation("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERS-schema/fers-xml.xsd");
 
         /*
         // Error handler which stops parsing on first error:
@@ -83,11 +83,22 @@ int main(int argc, char* argv[]) {
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         //parser.parse(filename.c_str());
-        parser.parse("FERSXML-example/generic-fers-xml.xml");
+        parser.parse("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERSXML-example/mono.xml");
 
         if(parser.getErrorCount() == 0) {
                 std::cout << "XML document is valid" << std::endl;
 
+                // Run xml_validator_output executable
+                // system() function enables command line input and hence the execution of the ./xml_validator_output
+                int result = std::system("./xml_validator_output"); // Change the command as per your system
+                if (result == -1) {
+                    std::cerr << "Failed to run xml_validator_output." << std::endl;
+                    return 1;
+                }
+
+                //Old output implementation
+
+                /*
                 // Specify the root element of the parsed XML document.
                 DOMElement* rootElement = parser.getDocument()->getDocumentElement();
 
@@ -105,6 +116,7 @@ int main(int argc, char* argv[]) {
 
                 // Deallocate the serializer object.
                 serializer->release();
+                */
 
             } else {
                 std::cout << "XML document is invalid" << std::endl;

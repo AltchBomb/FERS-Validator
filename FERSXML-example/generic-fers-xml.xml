@@ -7,10 +7,10 @@
         <endtime>end_time</endtime>
         <c>speed_of_light</c>
         <rate>export_sampling_rate</rate>
-        <export csv="(bool)" binary="(bool)" csvbinary="(bool)"/>
+        <export csv='true' binary='false' csvbinary='false'/>
         <interprate>cw_interpolation_rate</interprate>
         <randomseed>seed_for_PRNG</randomseed>
-        <adc_bits>number_of_adc_bits_to_sim</adc_bits>
+        <adcbits>number_of_adc_bits_to_sim</adcbits>
         <oversample>oversampling_ratio</oversample>
     </parameters>
 
@@ -20,6 +20,12 @@
     </target>
 
     <antenna name="antenna_name" pattern="gain_pattern">
+        <alpha>a</alpha> 
+        <beta>b</beta>
+        <gamma>g</gamma>
+        <diameter>diameter</diameter>
+        <azscale>azscale</azscale>
+        <elscale>elscale</elscale>
         <efficiency>ant_efficiency</efficiency>
     </antenna>
 

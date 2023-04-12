@@ -2,7 +2,7 @@
 
 <!--Monostatic simulation input file-->
 
-<!DOCTYPE simulation SYSTEM "../../fers-xml.dtd">
+<!DOCTYPE simulation SYSTEM "../fers-xml.dtd">
 <simulation name="sim_mono">
   <parameters>
     <starttime>0</starttime>
@@ -36,8 +36,8 @@
 
     <fixedrotation>
       <startazimuth>0.0</startazimuth>
-      <azimuthrate>0</azimuthrate>
       <startelevation>0</startelevation>
+      <azimuthrate>0</azimuthrate>
       <elevationrate>0</elevationrate>
     </fixedrotation>
 

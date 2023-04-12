@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!--Simulation using actual postision in UTM, for SKA core site with RSN1-visserskloof and Prieska Tx 94MHz or Canarvon 95.7MHz-->
 <!--Simulation runs for 3 minutes and contains 2 targets-->
-<!--Run 'xmllint --format --recover CleanSingleTarget.fersxml --output CleanSingleTarget.fersxml' to indent file-->
-<!DOCTYPE simulation SYSTEM "../../fers-xml.dtd">
+<!--Run 'xmllint format recover CleanSingleTarget.fersxml output CleanSingleTarget.fersxml' to indent file-->
+<!DOCTYPE simulation SYSTEM "../fers-xml.dtd">
 <simulation name="SKA_RSN1">
   <parameters>
     <starttime>0</starttime>

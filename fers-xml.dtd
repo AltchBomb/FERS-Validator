@@ -4,7 +4,7 @@
 <!ATTLIST simulation name CDATA #REQUIRED>
 
 <!-- Simulation Parameters -->
-<!ELEMENT parameters (starttime,endtime,c?,interprate?,rate?,export?,adcbits?)>
+<!ELEMENT parameters (starttime,endtime,c?,interprate?,rate?,export?,adc_bits?, oversample?)>
 <!ELEMENT starttime (#PCDATA)> <!-- Start time of simulation -->
 <!ELEMENT endtime (#PCDATA)> <!-- End time of simulation -->
 <!ELEMENT c (#PCDATA)> <!-- Propagation speed -->
@@ -16,7 +16,8 @@
 <!ATTLIST export csv (true|false) "true"> 
 <!ATTLIST export binary (true|false) "false">
 <!ATTLIST export csvbinary (true|false) "false">
-<!ELEMENT adcbits (#PCDATA)>
+<!ELEMENT adc_bits (#PCDATA)> <!-- Optional -->
+<!ELEMENT oversample (#PCDATA)> <!-- Added* Optional --> 
 
 <!-- Pulsed Radar Pulse -->
 <!ELEMENT pulse (length?,rate?,power,carrier)>
@@ -28,16 +29,20 @@ filename CDATA #REQUIRED>
 <!ELEMENT carrier (#PCDATA)> <!-- Frequency (Hz) -->
 
 <!-- Timing Source -->
-<!ELEMENT timing (frequency,jitter,freq_offset?)> <!-- Timing source. Sets frequency and jitter -->
+<!-- Added* 'alpha' changed to 'alpha1' because of error: duplicate declaration of element "alpha". -->
+<!ELEMENT timing (frequency,jitter?,freq_offset?, phase_offset?)> <!-- Timing source. Sets frequency and jitter -->
 <!ATTLIST timing name CDATA #REQUIRED
 synconpulse (true|false) "true"> <!-- Name of the timing source -->
-<!ELEMENT noise_entry (alpha,weight)> 
-<!ELEMENT alpha (#PCDATA)> <!-- Noise category alpha -->
+<!ELEMENT frequency (#PCDATA)> <!-- Added* Required --> 
+<!ELEMENT noise_entry (alpha1,weight)> 
+<!ELEMENT alpha1 (#PCDATA)> <!-- Noise category alpha1 -->
 <!ELEMENT weight (#PCDATA)> <!-- Weighting of noise in the category -->
 <!ELEMENT freq_offset (#PCDATA)> <!-- Offset from system frequency -->
+<!ELEMENT phase_offset (#PCDATA)> <!-- Added* [radians] Optional -->
 
 <!-- Antenna -->
-<!ELEMENT antenna (alpha?,beta?,gamma?,diameter?,azscale?,elscale?)>
+<!-- efficiency? added: Should this have been added? Was getting an error when defining it in other fersxml files -->
+<!ELEMENT antenna (alpha?,beta?,gamma?,diameter?,azscale?,elscale?, efficiency?)>
 <!ATTLIST antenna name CDATA #REQUIRED
 pattern CDATA #REQUIRED>
 <!ELEMENT alpha (#PCDATA)> <!-- Parameters of antenna model (see doc/equations.tex) -->
@@ -95,11 +100,12 @@ timing CDATA #REQUIRED>
 
 <!-- Standalone Receiver -->
 <!ELEMENT receiver (window_skip?,window_length?,prf?,noise_temp?)>
-<!ATTLIST receiver name CDATA #REQUIRED 
+<!ATTLIST receiver name CDATA #REQUIRED type CDATA #REQUIRED 
 antenna CDATA #REQUIRED
 timing CDATA #REQUIRED>
 <!ELEMENT window_skip (#PCDATA)> <!-- Time to skip after start of pulse before starting receiving (seconds) -->
 <!ELEMENT window_length (#PCDATA)> <!-- Length of the range gate (seconds) -->
+
 
 <!-- Target -->
 <!ELEMENT target (rcs)>
