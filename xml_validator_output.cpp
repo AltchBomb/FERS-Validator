@@ -1,3 +1,8 @@
+// Part of FERS input Validator Function
+// Outputs FERSXML contents to console in readbale format.
+// Script written by Michael Altshuler 
+// University of Cape Town: ALTMIC003
+
 #include <iostream>
 #include <string>
 #include <xercesc/dom/DOM.hpp>
@@ -11,6 +16,8 @@
 
 using namespace xercesc;
 using namespace std;
+
+//For some reason the speed of light (c) isn't outputting to the console.
 
 void outputElement(DOMElement* element, int indent = 0) {
     DOMNodeList* children = element->getChildNodes();

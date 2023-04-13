@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         //parser.parse(filename.c_str());
-        parser.parse("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERSXML-example/mono.xml");
+        parser.parse("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERSXML-example/SingleSimDualTargetTest.fersxml");
 
         if(parser.getErrorCount() == 0) {
                 std::cout << "XML document is valid" << std::endl;

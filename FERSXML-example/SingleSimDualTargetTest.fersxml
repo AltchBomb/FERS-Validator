@@ -8,11 +8,11 @@
     <starttime>0</starttime>
     <endtime>50</endtime>
     <c>299792458</c>
-    <rate>200000</rate>
-    <adc_bits>16</adc_bits>
     <interprate>1000</interprate>
-    <oversample>1</oversample>
+    <rate>200000</rate>
     <export binary="true" csv="false" xml="false"/>
+    <adc_bits>16</adc_bits>
+    <oversample>1</oversample>
   </parameters>
   <pulse name="TxWaveform" type="file" filename="../../Waveforms/BroadbandNoiseNormalised.h5">
     <power>14760</power> <!-- 9 kW * 2.15 dB (to create EIRP of dipole type pattern) -->
@@ -23,13 +23,13 @@
       </timing>
  <timing name="RxClock">
     <frequency>200000</frequency>
-    <random_freq_offset>0.01</random_freq_offset><!-- Approximately 50 ppb, typical for good OCXO -->
+    <freq_offset>0.01</freq_offset><!-- Approximately 50 ppb, typical for good OCXO -->
   </timing>
   <antenna name="RxYagiAntenna" pattern="sinc">
-    <efficiency>1</efficiency> <!-- Use the matlab "AntennaBeamCalculator" script to modify this -->
     <alpha>5.2481</alpha><!-- 7.2 dBi -->
     <beta>2</beta>
     <gamma>3.6</gamma>
+    <efficiency>1</efficiency> <!-- Use the matlab "AntennaBeamCalculator" script to modify this -->
   </antenna>
   <antenna name="TxIsoAntenna" pattern="isotropic">
     <efficiency>1</efficiency>
@@ -71,9 +71,9 @@
       <elevationrate>0</elevationrate>
     </fixedrotation>
     <receiver name="RefRx" type="continuous" antenna="RxYagiAntenna" timing="RxClock">
-      <prf>0.001</prf>
       <window_skip>0</window_skip>
       <window_length>50</window_length><!-- Time length of simulation -->
+      <prf>0.001</prf>
       <noise_temp>438.4</noise_temp><!--4 dB NF as per the minimal frontend -->
     </receiver>
   </platform>
@@ -93,9 +93,9 @@
       <elevationrate>0</elevationrate>
     </fixedrotation>
     <receiver name="SurvRx" type="continuous" antenna="RxYagiAntenna" timing="RxClock">
-      <prf>0.001</prf>
       <window_skip>0</window_skip>
       <window_length>50</window_length> <!-- Time length of simulation -->
+      <prf>0.001</prf>
       <noise_temp>438.4</noise_temp> <!-- 4 dB NF as per the minimal frontend -->
     </receiver>
   </platform>
