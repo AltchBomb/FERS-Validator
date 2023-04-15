@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 // Including necessary Xerces-C++ header files:
 #include <xercesc/dom/DOM.hpp>
@@ -80,17 +81,26 @@ int main(int argc, char* argv[]) {
         MyErrorHandler errorHandler;
         parser.setErrorHandler(&errorHandler);
 
+        // File to be parsed
+        std::string file_path = "FERSXML-example/SingleSimDualTargetTest.fersxml";
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         //parser.parse(filename.c_str());
-        parser.parse("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERSXML-example/SingleSimDualTargetTest.fersxml");
+        parser.parse(file_path.c_str());
 
         if(parser.getErrorCount() == 0) {
                 std::cout << "XML document is valid" << std::endl;
 
                 // Run xml_validator_output executable
                 // system() function enables command line input and hence the execution of the ./xml_validator_output
-                int result = std::system("./xml_validator_output"); // Change the command as per your system
+
+                //int result = std::system("./xml_validator_output"); // Change the command as per your system
+
+                // Command to run xml_validator_output with file_path as argument
+                std::string command = "./xml_validator_output " + file_path;
+                // Run the command using system() function
+                int result = std::system(command.c_str());
+
                 if (result == -1) {
                     std::cerr << "Failed to run xml_validator_output." << std::endl;
                     return 1;
