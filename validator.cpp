@@ -43,11 +43,18 @@ public:
 };
 
 int main(int argc, char* argv[]) {
-    
-    // Configuring command line tool for fers validator: $~ fers --validate <filename>
-    //const std::string filename(argv[1]);
 
     try {
+
+        // Check if the user provided the mode argument
+        std::string mode = "verbose";
+        if (argc == 2) {
+            mode = argv[1];
+            if (mode != "verbose" && mode != "non-verbose") {
+                std::cerr << "Invalid mode argument. Please provide 'verbose' or 'non-verbose'." << std::endl;
+                return 1;
+            }
+        } 
 
         // Initializing Xerces-C++ library:
         xercesc::XMLPlatformUtils::Initialize();
@@ -64,40 +71,26 @@ int main(int argc, char* argv[]) {
         // Set the custom XSD file for the parser by specifyng the XSD file path and XSD file name
         parser.setExternalNoNamespaceSchemaLocation("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERS-schema/fers-xml.xsd");
 
-        /*
-        // Error handler which stops parsing on first error:
-        ErrorHandler* errorHandler = parser.getErrorHandler();
-        errorHandler->setExitOnFirstFatalError(true);
-
-        // Creating SchemaValidator object and setting it up with parser:
-        SchemaValidator validator(parser.getValidationContext());
-        validator.setErrorHandler(errorHandler);
-
-        // Validating the DOMDocument object:
-        validator.validate(parser.getDocument());
-        */
-
         // error handler instance created and set on the parser.
         MyErrorHandler errorHandler;
         parser.setErrorHandler(&errorHandler);
 
         // File to be parsed
-        std::string file_path = "FERSXML-example/SingleSimDualTargetTest.fersxml";
+        std::string file_path = "FERSXML-example/CleanSingleTarget.fersxml";
 
         // Establish a DOMDocument object and parse the input FERSXML file:
-        //parser.parse(filename.c_str());
         parser.parse(file_path.c_str());
 
+        cout<< endl;
+
         if(parser.getErrorCount() == 0) {
+                std::cout << "User is in " << mode << " mode." << std::endl;
+                cout << endl;
+
                 std::cout << "XML document is valid" << std::endl;
 
-                // Run xml_validator_output executable
-                // system() function enables command line input and hence the execution of the ./xml_validator_output
-
-                //int result = std::system("./xml_validator_output"); // Change the command as per your system
-
-                // Command to run xml_validator_output with file_path as argument
-                std::string command = "./xml_validator_output " + file_path;
+                // Command to run xml_validator_output with mode and file_path as argument
+                std::string command = "./xml_validator_output " + file_path + " " + mode;
                 // Run the command using system() function
                 int result = std::system(command.c_str());
 
@@ -105,28 +98,6 @@ int main(int argc, char* argv[]) {
                     std::cerr << "Failed to run xml_validator_output." << std::endl;
                     return 1;
                 }
-
-                //Old output implementation
-
-                /*
-                // Specify the root element of the parsed XML document.
-                DOMElement* rootElement = parser.getDocument()->getDocumentElement();
-
-                // Generating a DOMLSSerializer object.
-                DOMImplementation* domImpl = DOMImplementationRegistry::getDOMImplementation(XMLString::transcode("LS"));
-                DOMLSSerializer* serializer = ((DOMImplementationLS*)domImpl)->createLSSerializer();
-
-                // Set the serializer up to produce data in a readable manner.
-                DOMConfiguration* domConfig = serializer->getDomConfig();
-                domConfig->setParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true);
-
-                // Serialize the DOM tree to a string and output to console if the XML document is valid.
-                std::string xmlString = XMLString::transcode(serializer->writeToString(rootElement));
-                std::cout << xmlString << std::endl;
-
-                // Deallocate the serializer object.
-                serializer->release();
-                */
 
             } else {
                 std::cout << "XML document is invalid" << std::endl;

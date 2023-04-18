@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 // Necessary Xerces-C++ header files for parsing the 
 #include <xercesc/dom/DOM.hpp>
@@ -30,8 +31,8 @@ double default_adc_bits = 0.0;
 double default_oversample = 1.0;
 // Extract export element values within inputted FERSXML file or use default values
 bool binary = true;  // Default value for binary parameter
-bool csv = false;   // Default value for csv parameter
-bool xml = false;   // Default value for xml parameter
+bool csv = false;    // Default value for csv parameter
+bool xml = false;    // Default value for xml parameter
 
 bool binarySpecified = false;  // Flag to indicate if binary value was specified
 bool csvSpecified = false;     // Flag to indicate if csv value was specified
@@ -51,8 +52,9 @@ void outputElement(DOMElement* element, int indent = 0) {
         if (childNode->getNodeType() == DOMNode::ELEMENT_NODE) {
             DOMElement* childElement = dynamic_cast<DOMElement*>(childNode);
             string elementName = XMLString::transcode(childElement->getNodeName());
-            // Outputs element name with its identification
-            cout << string(indent, ' ') << elementName << ":";
+
+            // Outputs element name with its identification and a fixed width
+            cout << setw(indent) << "" << setw(20) << left << elementName << ":";
 
             DOMNamedNodeMap* attributes = childElement->getAttributes();
             int numAttributes = attributes->getLength();
@@ -70,7 +72,7 @@ void outputElement(DOMElement* element, int indent = 0) {
                     }
                 }
             }
-            cout << endl;
+            //cout << endl;
 
             // Recursively process child elements
             outputElement(childElement, indent + 2);
@@ -79,20 +81,63 @@ void outputElement(DOMElement* element, int indent = 0) {
         else if (childNode->getNodeType() == DOMNode::TEXT_NODE) {
             DOMText* textNode = dynamic_cast<DOMText*>(childNode);
             string textValue = XMLString::transcode(textNode->getData());
-            // Output the text content with identification
-            cout << string(indent, ' ') << textValue << endl;
+            // Output the text content with identification and a fixed width
+            cout << setw(indent + 2) << "" << textValue;
         }
     }
+}
+
+// Counts the number of transmitters, receivers, and targets in the provided DOMElement and summarises simulation time.
+void elementCount(DOMElement* rootElement) {
+    // Extracting number of transmitters, receivers and targets.
+    const auto transmitters = rootElement->getElementsByTagName(XMLString::transcode("transmitter"));
+    std::cout << "Number of transmitters: " << transmitters->getLength() << std::endl;
+    const auto receivers = rootElement->getElementsByTagName(XMLString::transcode("receiver"));
+    std::cout << "Number of receivers: " << receivers->getLength() << std::endl;
+    const auto targets = rootElement->getElementsByTagName(XMLString::transcode("target"));
+    std::cout << "Number of targets: " << targets->getLength() << std::endl;
+}
+
+// Summarizes the simulation time by subtracting the <starttime> element from the <endtime> element:
+void summarizeSimTime(DOMElement* rootElement) {
+    // Define the tags for the starttime and endtime elements as XMLCh variables
+    const XMLCh* startTimeTag = XMLString::transcode("starttime");
+    const XMLCh* endTimeTag = XMLString::transcode("endtime");
+
+    // Get the first occurrence of the starttime and endtime elements from the root element
+    const auto startTimeNode = rootElement->getElementsByTagName(startTimeTag)->item(0);
+    const auto endTimeNode = rootElement->getElementsByTagName(endTimeTag)->item(0);
+
+    // Check if either the starttime or endtime element is missing from the XML document
+    if (!startTimeNode || !endTimeNode) {
+        std::cerr << "Error: could not find starttime or endtime element" << std::endl;
+        return;
+    }
+
+    // Get the text content of the starttime and endtime elements as C-style strings
+    const char* startTimeValue = XMLString::transcode(startTimeNode->getTextContent());
+    const char* endTimeValue = XMLString::transcode(endTimeNode->getTextContent());
+
+    // Convert the text content of the starttime and endtime elements to double values
+    const double startTime = std::atof(startTimeValue);
+    const double endTime = std::atof(endTimeValue);
+
+    // Calculate the simulation time as the difference between the endtime and starttime values
+    const double simTime = endTime - startTime;
+
+    std::cout << "Sim time: " << simTime << " seconds" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
 
     // Update file_path with command line argument
-    string file_path = argv[1]; 
+    string file_path = argv[1];
+    // Setting mode to evironment variable from command line.
+    string mode = argv[2];
 
     try {
         XMLPlatformUtils::Initialize();
-
+        //std::cout << mode << std::endl;
         XercesDOMParser parser;
         parser.setValidationScheme(XercesDOMParser::Val_Never);
         parser.setDoNamespaces(false);
@@ -106,7 +151,11 @@ int main(int argc, char* argv[]) {
 
         DOMDocument* document = parser.getDocument();
         DOMElement* rootElement = document->getDocumentElement();
-        outputElement(rootElement);
+
+        // Call outputElement if mode is set to verbose
+        if (std::strcmp(mode.c_str(), "verbose") == 0) {
+            outputElement(rootElement);
+        }
 
         // Extract set element values within inputted FERSXML file or use default values
 
@@ -405,7 +454,15 @@ int main(int argc, char* argv[]) {
         if (frequency == default_frequency && frequencyNodes->getLength() == 0) {
             std::cout << "  frequency = " << frequency << " Hz" << std::endl;
         }
+
+        cout << endl;
         
+        // Output element counts: Transmitters, Receivers, Targets only if in non-verbose mode:
+        if (std::strcmp(mode.c_str(), "non-verbose") == 0) {
+            std::cout << "Simulation Summary:" << std::endl;
+            elementCount(rootElement);
+            summarizeSimTime(rootElement);
+        }
 
         // Free up memory to prevent segmentation fault
         XMLPlatformUtils::Terminate();
