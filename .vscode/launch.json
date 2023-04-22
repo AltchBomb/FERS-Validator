@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    //PEM pass phrase for signing GDB executable = MJA7711joe
+        {
+            "name": "xml_validator_output",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/xml_validator_output",
+            "args": ["SingleSimDualTargetTest.fersxml", "verbose"],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/local/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build",
+            
+        },
+        {
+            "name": "kml_visualiser",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/kml_visualiser",
+            "args": ["SingleSimDualTargetTest.fersxml", "output.kml"],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/local/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build",
+            
+        }
+    ]
+}
