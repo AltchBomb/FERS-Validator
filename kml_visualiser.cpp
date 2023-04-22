@@ -1,3 +1,8 @@
+// FERS input Validator Function sub-system
+// Outputs KML GIS readable file.
+// Script written by Michael Altshuler 
+// University of Cape Town: ALTMIC003
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -47,30 +52,48 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile) {
         double altitudeAboveGround = altitude - referenceAltitude;
 
         // Determine the type of placemark to use
-        std::string placemarkType;
-        if (element->getElementsByTagName(receiverTag)->getLength() > 0 || element->getElementsByTagName(transmitterTag)->getLength() > 0) {
-            if (altitudeAboveGround > 0) {
-                placemarkType = "floating";
-            } else {
-                placemarkType = "simple";
-            }
+        std::string placemarkStyle;
+        if (element->getElementsByTagName(receiverTag)->getLength() > 0) {
+            placemarkStyle = "receiver";
+        } else if (element->getElementsByTagName(transmitterTag)->getLength() > 0) {
+            placemarkStyle = "transmitter";
         } else if (element->getElementsByTagName(targetTag)->getLength() > 0) {
-            placemarkType = "extruded";
+            placemarkStyle = "target";
         }
 
         // Write the placemark data to the KML file
         kmlFile << "<Placemark>\n";
-        kmlFile << "<name>" << XMLString::transcode(element->getAttribute(XMLString::transcode("name"))) << "</name>\n";
-        kmlFile << "<description>" << XMLString::transcode(element->getAttribute(XMLString::transcode("description"))) << "</description>\n";
-        kmlFile << "<styleUrl>#" << placemarkType << "</styleUrl>\n";
-        kmlFile << "<Point>\n";
-        kmlFile << "<coordinates>" << longitude << "," << latitude << "," << altitudeAboveGround << "</coordinates>\n";
-        kmlFile << "</Point>\n";
-        if (placemarkType == "extruded") {
-            kmlFile << "<gx:altitudeMode>relativeToGround</gx:altitudeMode>\n";
-            kmlFile << "<extrude>1</extrude>\n";
-            kmlFile << "<height>" << altitudeAboveGround << "</height>\n";
+        kmlFile << "    <name>" << XMLString::transcode(element->getAttribute(XMLString::transcode("name"))) << "</name>\n";
+        kmlFile << "    <description>" << XMLString::transcode(element->getAttribute(XMLString::transcode("description"))) << "</description>\n";
+
+        if (element->getElementsByTagName(receiverTag)->getLength() > 0) {
+            kmlFile << "    <styleUrl>#receiver</styleUrl>\n";
+        } else if (element->getElementsByTagName(transmitterTag)->getLength() > 0) {
+            kmlFile << "    <styleUrl>#transmitter</styleUrl>\n";
+        } else if (element->getElementsByTagName(targetTag)->getLength() > 0) {
+            kmlFile << "    <styleUrl>#target</styleUrl>\n";
         }
+
+        kmlFile << "    <LookAt>\n";
+        kmlFile << "        <longitude>" << longitude << "</longitude>\n";
+        kmlFile << "        <latitude>" << latitude << "</latitude>\n";
+        kmlFile << "        <altitude>" << altitudeAboveGround << "</altitude>\n";
+        kmlFile << "        <heading>-148.4122922628044</heading>\n";
+        kmlFile << "        <tilt>40.5575073395506</tilt>\n";
+        kmlFile << "        <range>500.6566641072245</range>\n";
+        kmlFile << "    </LookAt>\n";
+
+        kmlFile << "    <Point>\n";
+        kmlFile << "        <coordinates>" << longitude << "," << latitude << "," << altitudeAboveGround << "</coordinates>\n";
+
+        if (altitudeAboveGround > 0) {
+            kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
+            kmlFile << "        <extrude>1</extrude>\n";
+        } else {
+            kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+        }
+
+        kmlFile << "    </Point>\n";
         kmlFile << "</Placemark>\n";
     }
 }
@@ -87,6 +110,8 @@ void traverseDOMNode(const DOMNode* node, std::ofstream& kmlFile) {
 }
 
 int main(int argc, char* argv[]) {
+
+
 
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " <input XML file> <output KML file>" << std::endl;
@@ -143,10 +168,54 @@ int main(int argc, char* argv[]) {
         kmlFile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         kmlFile << "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n";
         kmlFile << "<Document>\n";
+        kmlFile << "<name>" << file_path << "</name>\n";
 
+        // Add styles here
+        kmlFile << "<Style id=\"receiver\">\n";
+        kmlFile << "  <IconStyle>\n";
+        kmlFile << "    <Icon>\n";
+        kmlFile << "      <href>https://cdn-icons-png.flaticon.com/512/645/645436.png</href>\n";
+        kmlFile << "    </Icon>\n";
+        kmlFile << "  </IconStyle>\n";
+        kmlFile << "</Style>\n";
+        kmlFile << "<Style id=\"transmitter\">\n";
+        kmlFile << "  <IconStyle>\n";
+        kmlFile << "    <Icon>\n";
+        kmlFile << "      <href>https://cdn-icons-png.flaticon.com/128/224/224666.png</href>\n";
+        kmlFile << "    </Icon>\n";
+        kmlFile << "  </IconStyle>\n";
+        kmlFile << "</Style>\n";
+        kmlFile << "<Style id=\"target\">\n";
+        kmlFile << "  <IconStyle>\n";
+        kmlFile << "    <Icon>\n";
+        kmlFile << "      <href>https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Target_red_dot1.svg/1200px-Target_red_dot1.svg.png</href>\n";
+        kmlFile << "    </Icon>\n";
+        kmlFile << "  </IconStyle>\n";
+        kmlFile << "  <LineStyle>\n";
+        kmlFile << "    <width>2</width>\n";
+        kmlFile << "  </LineStyle>\n";
+        kmlFile << "</Style>\n";
+
+        // Add the Folder element
+        kmlFile << "<Folder>\n";
+        kmlFile << "  <name>Reference Coordinate</name>\n";
+        kmlFile << "  <description>Placemarks for various elements in the FERSXML file. All Placemarks are situated relative to this reference point.</description>\n";
+
+        // Add the LookAt element with given values
+        kmlFile << "  <LookAt>\n";
+        kmlFile << "    <longitude>18.4612</longitude>\n";
+        kmlFile << "    <latitude>-33.9545</latitude>\n";
+        kmlFile << "    <altitude>0</altitude>\n";
+        kmlFile << "    <heading>-148.4122922628044</heading>\n";
+        kmlFile << "    <tilt>40.5575073395506</tilt>\n";
+        kmlFile << "    <range>2500</range>\n";
+        kmlFile << "  </LookAt>\n";
+
+        // Traverse DOMNode and output extracted FERSXML data:
         traverseDOMNode(rootElement, kmlFile);
 
-        // Write the KML footer
+        // Close the Folder and Document elements
+        kmlFile << "</Folder>\n";
         kmlFile << "</Document>\n";
         kmlFile << "</kml>\n";
 

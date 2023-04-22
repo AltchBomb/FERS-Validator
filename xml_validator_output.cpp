@@ -1,4 +1,4 @@
-// Part of FERS input Validator Function
+// FERS input Validator Function sub-system
 // Outputs FERSXML contents to console in readbale format.
 // Script written by Michael Altshuler 
 // University of Cape Town: ALTMIC003

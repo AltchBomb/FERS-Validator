@@ -40,7 +40,7 @@
       <positionwaypoint>
         <x>0</x> <!-- Setting visserskloof Rx as the 0,0 point -->
         <y>0</y>
-        <altitude>0</altitude>
+        <altitude>100</altitude>
         <time>0</time>
       </positionwaypoint>
     </motionpath>
@@ -131,13 +131,13 @@
 	<positionwaypoint>
         <x>50000</x>
         <y>-25000</y>
-        <altitude>0</altitude><!-- Starting altitude -->
+        <altitude>100</altitude><!-- Starting altitude -->
         <time>0</time>
       </positionwaypoint>
       <positionwaypoint>
         <x>29000</x>
         <y>-25000</y>
-        <altitude>0</altitude> <!-- End altitude -->
+        <altitude>100</altitude> <!-- End altitude -->
         <time>50</time><!-- Time length of simulation -->
       </positionwaypoint>
     </motionpath>
