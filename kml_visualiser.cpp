@@ -24,8 +24,13 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile) {
     // Check if the element is a platform
     if (XMLString::equals(element->getTagName(), platformTag)) {
         // Get the positionwaypoint element
-        const DOMElement* positionWaypointElement = dynamic_cast<const DOMElement*>(
-            element->getElementsByTagName(positionWaypointTag)->item(0));
+        // Check if the getElementsByTagName() function returns a valid result before using it
+        DOMNodeList* positionWaypointList = element->getElementsByTagName(positionWaypointTag);
+        if (positionWaypointList->getLength() == 0) {
+            return;
+        }
+
+        const DOMElement* positionWaypointElement = dynamic_cast<const DOMElement*>(element->getElementsByTagName(positionWaypointTag)->item(0));
 
         // Extract the position coordinates
         double x = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
@@ -88,15 +93,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-     // Update file_path with command line argument
+    // Update file_path with command line argument
     string file_path = argv[1];
     // Setting mode to evironment variable from command line.
     string output_file = argv[2];
 
     try {
         XMLPlatformUtils::Initialize();
-        //std::cout << mode << std::endl;
         XercesDOMParser parser;
+
+        // Error handler configuration
+        ErrorHandler* errorHandler = (ErrorHandler*) new HandlerBase();
+        parser.setErrorHandler(errorHandler); 
+
         parser.setValidationScheme(XercesDOMParser::Val_Never);
         parser.setDoNamespaces(false);
         parser.setDoSchema(false);
@@ -106,11 +115,22 @@ int main(int argc, char* argv[]) {
 
         // Use file_path from command line argument
         parser.parse(file_path.c_str()); 
-        std::cout << "parsed" << std::endl;
+
+        // Creating DOMDocument and checking if document pointer is valid
         DOMDocument* document = parser.getDocument();
-        std::cout << "document created: " << document << std::endl;
+        if (!document) {
+            std::cerr << "Error: document not found" << std::endl;
+            XMLPlatformUtils::Terminate();
+            return 1;
+        }
+
+        // Creating rootElement and checking if rootElement pointer is valid 
         DOMElement* rootElement = document->getDocumentElement();
-        std::cout << "root address found" << std::endl;
+        if (!rootElement) {
+            std::cerr << "Error: root element not found" << std::endl;
+            XMLPlatformUtils::Terminate();
+            return 1;
+        }
 
         std::ofstream kmlFile(output_file.c_str());
         if (!kmlFile.is_open()) {
@@ -131,7 +151,8 @@ int main(int argc, char* argv[]) {
         kmlFile << "</kml>\n";
 
         kmlFile.close();
-        XMLPlatformUtils::Terminate();
+        
+        delete errorHandler; // Clean up the error handler
     }
     catch (const XMLException& e) {
         cerr << "Error initializing Xerces-C++: " << XMLString::transcode(e.getMessage()) << endl;
@@ -150,5 +171,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    XMLPlatformUtils::Terminate();
     return 0;
 }

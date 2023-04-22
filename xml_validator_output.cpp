@@ -464,8 +464,6 @@ int main(int argc, char* argv[]) {
             summarizeSimTime(rootElement);
         }
 
-        // Free up memory to prevent segmentation fault
-        XMLPlatformUtils::Terminate();
 
     }
     catch (const XMLException& e) {
@@ -485,5 +483,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Free up memory to prevent segmentation fault
+    XMLPlatformUtils::Terminate();
     return 0;
 }
