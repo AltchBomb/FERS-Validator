@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -16,7 +17,33 @@
 using namespace std;
 using namespace xercesc;
 
-void processElement(const DOMElement* element, std::ofstream& kmlFile) {
+std::string getCoordinatesFromPositionWaypoint(const DOMElement* positionWaypointElement, double referenceLatitude, double referenceLongitude, double referenceAltitude) {
+    const XMLCh* xTag = XMLString::transcode("x");
+    const XMLCh* yTag = XMLString::transcode("y");
+    const XMLCh* altitudeTag = XMLString::transcode("altitude");
+
+    double x = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
+    double y = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
+    double altitude = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
+
+    // Convert the position coordinates to geographic coordinates
+    // Default coordinates
+    // const double referenceLatitude = -33.9545;
+    // const double referenceLongitude = 18.4563;
+    // const double referenceAltitude = 0;
+
+    double longitude = referenceLongitude + x / (cos(referenceLatitude * M_PI / 180) * 111319.9);
+    double latitude = referenceLatitude + y / 111319.9;
+    double altitudeAboveGround = altitude - referenceAltitude;
+
+    std::stringstream coordinates;
+    coordinates << std::fixed << std::setprecision(6) << longitude << "," << latitude << "," << altitudeAboveGround;
+
+    return coordinates.str();
+}
+
+
+void processElement(const DOMElement* element, std::ofstream& kmlFile, double referenceLatitude, double referenceLongitude, double referenceAltitude) {
     const XMLCh* platformTag = XMLString::transcode("platform");
     const XMLCh* receiverTag = XMLString::transcode("receiver");
     const XMLCh* transmitterTag = XMLString::transcode("transmitter");
@@ -25,6 +52,8 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile) {
     const XMLCh* xTag = XMLString::transcode("x");
     const XMLCh* yTag = XMLString::transcode("y");
     const XMLCh* altitudeTag = XMLString::transcode("altitude");
+    const XMLCh* motionPathTag = XMLString::transcode("motionpath");
+    const XMLCh* interpolationAttr = XMLString::transcode("interpolation");
 
     // Check if the element is a platform
     if (XMLString::equals(element->getTagName(), platformTag)) {
@@ -43,13 +72,24 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile) {
         double altitude = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
 
         // Convert the position coordinates to geographic coordinates
-        const double referenceLatitude = -33.9545;
-        const double referenceLongitude = 18.4563;
-        const double referenceAltitude = 0;
+        // Default values:
+        // const double referenceLatitude = -33.9545;
+        // const double referenceLongitude = 18.4563;
+        // const double referenceAltitude = 0;
 
+        // Rough estimation equirectangular projection method.
         double longitude = referenceLongitude + x / (cos(referenceLatitude * M_PI / 180) * 111319.9);
         double latitude = referenceLatitude + y / 111319.9;
         double altitudeAboveGround = altitude - referenceAltitude;
+
+        // Get the motionpath element
+        const DOMElement* motionPathElement = dynamic_cast<const DOMElement*>(element->getElementsByTagName(motionPathTag)->item(0));
+
+        // Extract the interpolation attribute
+        const XMLCh* interpolation = motionPathElement->getAttribute(interpolationAttr);
+
+        // Determine if the interpolation is linear or exponential
+        bool isLinearOrExponential = (XMLString::equals(interpolation, XMLString::transcode("linear")) || XMLString::equals(interpolation, XMLString::transcode("exponential")));
 
         // Determine the type of placemark to use
         std::string placemarkStyle;
@@ -74,54 +114,152 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile) {
             kmlFile << "    <styleUrl>#target</styleUrl>\n";
         }
 
-        kmlFile << "    <LookAt>\n";
-        kmlFile << "        <longitude>" << longitude << "</longitude>\n";
-        kmlFile << "        <latitude>" << latitude << "</latitude>\n";
-        kmlFile << "        <altitude>" << altitudeAboveGround << "</altitude>\n";
-        kmlFile << "        <heading>-148.4122922628044</heading>\n";
-        kmlFile << "        <tilt>40.5575073395506</tilt>\n";
-        kmlFile << "        <range>500.6566641072245</range>\n";
-        kmlFile << "    </LookAt>\n";
+        // If the interpolation is linear or exponential, use the gx:Track element
+        if (isLinearOrExponential) {
+            kmlFile << "    <gx:Track>\n";
+            if (altitudeAboveGround > 0) {
+                kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
+                kmlFile << "        <extrude>1</extrude>\n";
+            } else {
+                kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+            }
 
-        kmlFile << "    <Point>\n";
-        kmlFile << "        <coordinates>" << longitude << "," << latitude << "," << altitudeAboveGround << "</coordinates>\n";
+            // Iterate through the position waypoints
+            for (XMLSize_t i = 0; i < positionWaypointList->getLength(); ++i) {
+                const DOMElement* positionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(i));
 
-        if (altitudeAboveGround > 0) {
-            kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
-            kmlFile << "        <extrude>1</extrude>\n";
-        } else {
-            kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+                // Extract the position coordinates
+                double x = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
+                double y = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
+                double altitude = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
+
+                // Convert the position coordinates to geographic coordinates
+                double longitude = referenceLongitude + x / (cos(referenceLatitude * M_PI / 180) * 111319.9);
+                double latitude = referenceLatitude + y / 111319.9;
+                double altitudeAboveGround = altitude - referenceAltitude;
+
+                // Extract the time value
+                const XMLCh* timeTag = XMLString::transcode("time");
+                double time = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(timeTag)->item(0)->getTextContent()));
+
+                // Write the time and coordinates to the gx:Track element
+                kmlFile << "        <when>" << time << "</when>\n";
+                kmlFile << "        <gx:coord>" << longitude << " " << latitude << " " << altitudeAboveGround << "</gx:coord>\n";
+            }
+
+            kmlFile << "    </gx:Track>\n";
         }
 
-        kmlFile << "    </Point>\n";
+        else {
+            kmlFile << "    <LookAt>\n";
+            kmlFile << "        <longitude>" << longitude << "</longitude>\n";
+            kmlFile << "        <latitude>" << latitude << "</latitude>\n";
+            kmlFile << "        <altitude>" << altitudeAboveGround << "</altitude>\n";
+            kmlFile << "        <heading>-148.4122922628044</heading>\n";
+            kmlFile << "        <tilt>40.5575073395506</tilt>\n";
+            kmlFile << "        <range>500.6566641072245</range>\n";
+            kmlFile << "    </LookAt>\n";
+
+            kmlFile << "    <Point>\n";
+            kmlFile << "        <coordinates>" << longitude << "," << latitude << "," << altitudeAboveGround << "</coordinates>\n";
+
+            if (altitudeAboveGround > 0) {
+                kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
+                kmlFile << "        <extrude>1</extrude>\n";
+            } else {
+                kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+            }
+
+            kmlFile << "    </Point>\n"; 
+        }
+
         kmlFile << "</Placemark>\n";
+
+        if (isLinearOrExponential) {
+            // Get the first and last position waypoints
+            const DOMElement* firstPositionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(0));
+            const DOMElement* lastPositionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(positionWaypointList->getLength() - 1));
+
+            // Extract the start and end coordinates
+            std::string startCoordinates = getCoordinatesFromPositionWaypoint(firstPositionWaypointElement, referenceLatitude, referenceLongitude, referenceAltitude);
+            std::string endCoordinates = getCoordinatesFromPositionWaypoint(lastPositionWaypointElement, referenceLatitude, referenceLongitude, referenceAltitude);
+
+            // Start point placemark
+            kmlFile << "<Placemark>\n";
+            kmlFile << "    <name>Start: " << XMLString::transcode(element->getAttribute(XMLString::transcode("name"))) << "</name>\n";
+            kmlFile << "    <styleUrl>#target</styleUrl>\n"; // Replace with your desired style URL for the start icon
+            kmlFile << "    <Point>\n";
+            kmlFile << "        <coordinates>" << startCoordinates << "</coordinates>\n";
+            if (altitudeAboveGround > 0) {
+                kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
+                kmlFile << "        <extrude>1</extrude>\n";
+            } else {
+                kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+            }
+            kmlFile << "    </Point>\n";
+            kmlFile << "</Placemark>\n";
+
+            // End point placemark
+            kmlFile << "<Placemark>\n";
+            kmlFile << "    <name>End: " << XMLString::transcode(element->getAttribute(XMLString::transcode("name"))) << "</name>\n";
+            kmlFile << "    <styleUrl>#target</styleUrl>\n"; // Replace with your desired style URL for the end icon
+            kmlFile << "    <Point>\n";
+            kmlFile << "        <coordinates>" << endCoordinates << "</coordinates>\n";
+            if (altitudeAboveGround > 0) {
+                kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
+                kmlFile << "        <extrude>1</extrude>\n";
+            } else {
+                kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+            }
+            kmlFile << "    </Point>\n";
+            kmlFile << "</Placemark>\n";
+        }
+
     }
 }
 
-void traverseDOMNode(const DOMNode* node, std::ofstream& kmlFile) {
+void traverseDOMNode(const DOMNode* node, std::ofstream& kmlFile, double referenceLatitude, double referenceLongitude, double referenceAltitude) {
     if (node->getNodeType() == DOMNode::ELEMENT_NODE) {
         const DOMElement* element = dynamic_cast<const DOMElement*>(node);
-        processElement(element, kmlFile);
+        processElement(element, kmlFile, referenceLatitude, referenceLongitude, referenceAltitude);
     }
 
     for (DOMNode* child = node->getFirstChild(); child != nullptr; child = child->getNextSibling()) {
-        traverseDOMNode(child, kmlFile);
+        traverseDOMNode(child, kmlFile, referenceLatitude, referenceLongitude, referenceAltitude);
     }
 }
 
+// Main function
 int main(int argc, char* argv[]) {
 
-
-
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <input XML file> <output KML file>" << std::endl;
+    if (argc > 3 && argc < 6) {
+        std::cerr << "Usage: " << argv[0] << " <input XML file> <output KML file> [<referenceLatitude> <referenceLongitude> <referenceAltitude>]" << std::endl;
         return 1;
     }
+
+    // Setting default geographical and altitude coordinates
+    double referenceLatitude = -33.9545;
+    double referenceLongitude = 18.4563;
+    double referenceAltitude = 0;
 
     // Update file_path with command line argument
     string file_path = argv[1];
     // Setting mode to evironment variable from command line.
     string output_file = argv[2];
+    // Setting georgraphical coordinates to command line input
+    if (argc == 6) {
+        try {
+            referenceLatitude = std::stod(argv[3]);
+            referenceLongitude = std::stod(argv[4]);
+            referenceAltitude = std::stod(argv[5]);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Error: Invalid argument. Please provide valid numbers for referenceLatitude, referenceLongitude, and referenceAltitude.\n";
+            return 1;
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Error: Out of range. Please provide valid numbers for referenceLatitude, referenceLongitude, and referenceAltitude.\n";
+            return 1;
+        }
+    }
 
     try {
         XMLPlatformUtils::Initialize();
@@ -135,8 +273,6 @@ int main(int argc, char* argv[]) {
         parser.setDoNamespaces(false);
         parser.setDoSchema(false);
         parser.setLoadExternalDTD(false);
-
-        //parser.parse("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERSXML-example/SingleSimDualTargetTest.fersxml");
 
         // Use file_path from command line argument
         parser.parse(file_path.c_str()); 
@@ -166,7 +302,7 @@ int main(int argc, char* argv[]) {
 
         // Write the KML header
         kmlFile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        kmlFile << "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n";
+        kmlFile << "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n";
         kmlFile << "<Document>\n";
         kmlFile << "<name>" << file_path << "</name>\n";
 
@@ -203,16 +339,16 @@ int main(int argc, char* argv[]) {
 
         // Add the LookAt element with given values
         kmlFile << "  <LookAt>\n";
-        kmlFile << "    <longitude>18.4612</longitude>\n";
-        kmlFile << "    <latitude>-33.9545</latitude>\n";
-        kmlFile << "    <altitude>0</altitude>\n";
+        kmlFile << "    <longitude>" << referenceLongitude << "</longitude>\n";
+        kmlFile << "    <latitude>"<< referenceLatitude << "</latitude>\n";
+        kmlFile << "    <altitude>" << referenceAltitude << "</altitude>\n";
         kmlFile << "    <heading>-148.4122922628044</heading>\n";
         kmlFile << "    <tilt>40.5575073395506</tilt>\n";
-        kmlFile << "    <range>2500</range>\n";
+        kmlFile << "    <range>10000</range>\n";
         kmlFile << "  </LookAt>\n";
 
         // Traverse DOMNode and output extracted FERSXML data:
-        traverseDOMNode(rootElement, kmlFile);
+        traverseDOMNode(rootElement, kmlFile, referenceLatitude, referenceLongitude, referenceAltitude);
 
         // Close the Folder and Document elements
         kmlFile << "</Folder>\n";

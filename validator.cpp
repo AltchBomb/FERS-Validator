@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
 
         // Check if the user provided the mode argument
         std::string mode = "verbose";
-        if (argc == 2) {
-            mode = argv[1];
+        if (argc == 3) {
+            mode = argv[2];
             if (mode != "verbose" && mode != "non-verbose") {
                 std::cerr << "Invalid mode argument. Please provide 'verbose' or 'non-verbose'." << std::endl;
                 return 1;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         parser.setErrorHandler(&errorHandler);
 
         // File to be parsed
-        std::string file_path = "FERSXML-example/CleanSingleTarget.fersxml";
+        std::string file_path = argv[1];
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         parser.parse(file_path.c_str());
@@ -99,9 +99,67 @@ int main(int argc, char* argv[]) {
                     return 1;
                 }
 
-            } else {
-                std::cout << "XML document is invalid" << std::endl;
-            }
+                std::cout << endl;
+
+                // Prompting user whether they want to run the kml_visualiser
+                char run_kml_visualiser;
+                char custom_coordinates;
+                double referenceLatitude = -33.9545;
+                double referenceLongitude = 18.4563;
+                double referenceAltitude = 0;
+                string outputName;
+
+                std::cout << "Do you want to run the kml_visualiser program? (y/n): ";
+                std::cin >> run_kml_visualiser;
+
+                if (run_kml_visualiser == 'y' || run_kml_visualiser == 'Y') {
+                    std::cout << "Name a KML output file: ";
+                    std::cin >> outputName;
+
+                    std::cout << "Do you want to enter custom referenceLatitude, referenceLongitude, and referenceAltitude? (y/n): ";
+                    std::cin >> custom_coordinates;
+                    std:: cout << "Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E , 0>" << std::endl;
+
+                    if (custom_coordinates == 'y' || custom_coordinates == 'Y') {
+                        std::cout << "Enter referenceLatitude (default: -33.9545): ";
+                        std::cin >> referenceLatitude;
+
+                        std::cout << "Enter referenceLongitude (default: 18.4563): ";
+                        std::cin >> referenceLongitude;
+
+                        std::cout << "Enter referenceAltitude (default: 0): ";
+                        std::cin >> referenceAltitude;
+                    }
+
+                    std::string kml_visualiser_command = "./kml_visualiser";
+
+                    if (custom_coordinates == 'y' || custom_coordinates == 'Y') {
+                        kml_visualiser_command += " " + file_path + " " + outputName + ".kml" + " " + std::to_string(referenceLatitude) + " " + std::to_string(referenceLongitude) + " " + std::to_string(referenceAltitude);
+                        
+                        int kml_visualiser_result = std::system(kml_visualiser_command.c_str());
+
+                        if (kml_visualiser_result == -1) {
+                            std::cerr << "Failed to run kml_visualiser." << std::endl;
+                            return 1;
+                        }
+                    } else {
+                        kml_visualiser_command += " " + file_path + " " + outputName + ".kml";
+                        int kml_visualiser_result = std::system(kml_visualiser_command.c_str());
+
+                        if (kml_visualiser_result == -1) {
+                            std::cerr << "Failed to run kml_visualiser." << std::endl;
+                            return 1;
+                        }
+                    }
+
+                    std::cout << outputName + ".kml" + " outputted to current working directory." << std::endl; 
+
+                } else if (run_kml_visualiser != 'n' && run_kml_visualiser != 'N') {
+                    std::cerr << "Invalid input. Please enter 'y' for yes or 'n' for no." << std::endl;
+                    return 1;
+                }
+
+        }
 
             // Function call deallocates memory associated with he parsed FERSXML document.
             //parser.resetDocumentPool();
@@ -126,51 +184,3 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 }
-
-
-/*
-// Initializing Xerces-C++ library:
-xercesc::XMLPlatformUtils::Initialize();
-
-// A XercesDOMParser object is set along with its features:
-xercesc::XercesDOMParser parser;
-// Enables validation during parsing.
-parser.setValidationScheme(xercesc::XercesDOMParser::Val_Always);
-// Enables validation against an XSD Schema file.
-parser.setDoNamespaces(true);
-// Enables full schema constraint checking during validation.
-parser.setDoSchema(true);
-
-// Set the custom XSD file for the parser by specifyng the XSD file path and XSD file name
-parser.setExternalSchemaLocation("./schema.xsd", "schema.xsd");
-
-// Establish a DOMDocument object and parse the input FERSXML file:
-// A pointer variable of type xerces::DOMDocument is created. parser.parseURI("input.xml") returns a pointer.
-xercesc::DOMDocument* doc = parser.parserURI("sample1.xml");
-
-// Create a schema validator object and specify the location of the schema:
-// A pointer variable of type xerces::SchemaValidator is created.
-xercesc::SchemaValidator* validator = new xercesc::SchemaValidator();
-validator->setExternalSchemaLocation("./schema.xsd", "schema.xsd");
-
-// Using the SchemaValidator to validate the DOMDocument object:
-// try block used to catch any exceptions that might be thrown while the validation process is running.
-try {
-    validator->validate(*doc);
-    std::cout << "XML is valid." << std::endl;
-} catch (const xercesc::XMLException& e) {
-    std::cerr << "Error: " << xercesc::XMLString::transcode(e.getMessage()) << std::endl;
-} catch (const xercesc::DOMException& e) {
-    std::cerr << "Error: " << xercesc::XMLString::transcode(e.getMessage()) << std::endl;
-} catch (const xercesc::SAXParseException& e) {
-    std::cerr << "Error: " << xercesc::XMLString::transcode(e.getMessage()) << " at line " << e.getLineNumber() << ", column " << e.getColumnNumber() << std::endl;
-} catch (...) {
-    std::cerr << "Error: unknown exception" << std::endl;
-}
-
-// Cleanup memory and terminate the Xerces-C++ library from running, and free up memory allocation:
-parser.resetDocumentPool();
-validator->~SchemaValidator();
-xercesc::XMLPlatformUtils::Terminate();
-
-*/

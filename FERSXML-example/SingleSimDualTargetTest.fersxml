@@ -40,7 +40,7 @@
       <positionwaypoint>
         <x>0</x> <!-- Setting visserskloof Rx as the 0,0 point -->
         <y>0</y>
-        <altitude>100</altitude>
+        <altitude>1000</altitude>
         <time>0</time>
       </positionwaypoint>
     </motionpath>
