@@ -98,7 +98,7 @@
     </receiver>
   </platform>
   <platform name="target1Platform">
-    <motionpath interpolation="linear">
+    <motionpath interpolation="cubic">
 	<positionwaypoint>
         <x>331995.77</x>
         <y>6291261.10</y>

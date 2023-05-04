@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+<Document>
+<name>FERSXML-example/SingleSimDualTargetTest.fersxml</name>
+<Style id="receiver">
+  <IconStyle>
+    <Icon>
+      <href>https://cdn-icons-png.flaticon.com/512/645/645436.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+<Style id="transmitter">
+  <IconStyle>
+    <Icon>
+      <href>https://cdn-icons-png.flaticon.com/128/224/224666.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+<Style id="target">
+  <IconStyle>
+    <Icon>
+      <href>https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Target_red_dot1.svg/1200px-Target_red_dot1.svg.png</href>
+    </Icon>
+  </IconStyle>
+  <LineStyle>
+    <width>2</width>
+  </LineStyle>
+</Style>
+<Folder>
+  <name>Reference Coordinate</name>
+  <description>Placemarks for various elements in the FERSXML file. All Placemarks are situated relative to this reference point.</description>
+  <LookAt>
+    <longitude>-18.46</longitude>
+    <latitude>133.95</latitude>
+    <altitude>0</altitude>
+    <heading>-148.4122922628044</heading>
+    <tilt>40.5575073395506</tilt>
+    <range>10000</range>
+  </LookAt>
+<Placemark>
+    <name>PrieskaTx</name>
+    <description></description>
+    <styleUrl>#transmitter</styleUrl>
+    <LookAt>
+        <longitude>-18.46</longitude>
+        <latitude>133.95</latitude>
+        <altitude>1000</altitude>
+        <heading>-148.4122922628044</heading>
+        <tilt>40.5575073395506</tilt>
+        <range>500.6566641072245</range>
+    </LookAt>
+    <Point>
+        <coordinates>-18.46,133.95,1000</coordinates>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>RefRx</name>
+    <description></description>
+    <styleUrl>#receiver</styleUrl>
+    <LookAt>
+        <longitude>-18.46</longitude>
+        <latitude>134.399</latitude>
+        <altitude>0</altitude>
+        <heading>-148.4122922628044</heading>
+        <tilt>40.5575073395506</tilt>
+        <range>500.6566641072245</range>
+    </LookAt>
+    <Point>
+        <coordinates>-18.46,134.399,0</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>SurvRx</name>
+    <description></description>
+    <styleUrl>#receiver</styleUrl>
+    <LookAt>
+        <longitude>-18.46</longitude>
+        <latitude>134.399</latitude>
+        <altitude>0</altitude>
+        <heading>-148.4122922628044</heading>
+        <tilt>40.5575073395506</tilt>
+        <range>500.6566641072245</range>
+    </LookAt>
+    <Point>
+        <coordinates>-18.46,134.399,0</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>Aeroplane</name>
+    <description></description>
+    <styleUrl>#target</styleUrl>
+    <gx:Track>
+        <altitudeMode>clampToGround</altitudeMode>
+        <when>0</when>
+        <gx:coord>-19.1072 134.399 0</gx:coord>
+        <when>50</when>
+        <gx:coord>-19.2495 134.399 0</gx:coord>
+    </gx:Track>
+</Placemark>
+<Placemark>
+    <name>Start: Aeroplane</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-19.107171,134.399156,0.000000</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>End: Aeroplane</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-19.249548,134.399156,0.000000</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>Fighter Jet</name>
+    <description></description>
+    <styleUrl>#target</styleUrl>
+    <gx:Track>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+        <when>0</when>
+        <gx:coord>-19.1072 133.725 100</gx:coord>
+        <when>50</when>
+        <gx:coord>-18.8354 133.725 500</gx:coord>
+    </gx:Track>
+</Placemark>
+<Placemark>
+    <name>Start: Fighter Jet</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-19.107171,133.725422,100.000000</coordinates>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>End: Fighter Jet</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-18.835359,133.725422,500.000000</coordinates>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+    </Point>
+</Placemark>
+</Folder>
+</Document>
+</kml>

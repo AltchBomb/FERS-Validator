@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 // Including necessary Xerces-C++ header files:
 #include <xercesc/dom/DOM.hpp>
@@ -42,19 +43,59 @@ public:
     void resetErrors() {}
 };
 
+// Function to extract the file name from a given path
+std::string getFileNameFromPath(const std::string &filePath) {
+    size_t lastSlash = filePath.find_last_of("/\\");
+    size_t lastDot = filePath.find_last_of(".");
+    if (lastSlash == std::string::npos) {
+        lastSlash = 0;
+    } else {
+        lastSlash++;
+    }
+    return filePath.substr(lastSlash, lastDot - lastSlash);
+}
+
+
 int main(int argc, char* argv[]) {
 
     try {
 
         // Check if the user provided the mode argument
-        std::string mode = "verbose";
-        if (argc == 3) {
-            mode = argv[2];
-            if (mode != "verbose" && mode != "non-verbose") {
-                std::cerr << "Invalid mode argument. Please provide 'verbose' or 'non-verbose'." << std::endl;
+        // std::string mode = "non-verbose";
+        // if (argc >= 3) {
+        //     mode = argv[1];
+        //     if (mode != "-v" && mode != "non-verbose") {
+        //         std::cerr << "Invalid mode argument. Please provide '-v' for verbose or 'non-verbose'." << std::endl;
+        //         return 1;
+        //     }
+        //     if (mode == "-v") {
+        //         mode = "verbose";
+        //     }
+        // } 
+
+        // Check if the user provided the mode argument
+        std::string mode = "non-verbose"; // Default mode
+        std::string file_path;
+
+        if (argc == 2) {
+            file_path = argv[1];
+        } else if (argc == 3) {
+            std::string mode_arg = argv[1];
+            if (mode_arg == "-v" || mode_arg == "--verbose") {
+                mode = "verbose";
+            } else if (mode_arg == "-q" || mode_arg == "--quiet" || mode_arg == "--non-verbose") {
+                mode = "non-verbose";
+            } else {
+                std::cerr << "Invalid mode argument. Please provide '-v' or '--verbose' for verbose mode, or '-q', '--quiet', or '--non-verbose' for non-verbose mode." << std::endl;
                 return 1;
             }
-        } 
+            file_path = argv[2];
+        } else {
+            std::cerr << "Invalid number of arguments. Please provide a file path and an optional mode (-v for verbose)." << std::endl;
+            return 1;
+        }
+
+
 
         // Initializing Xerces-C++ library:
         xercesc::XMLPlatformUtils::Initialize();
@@ -76,7 +117,15 @@ int main(int argc, char* argv[]) {
         parser.setErrorHandler(&errorHandler);
 
         // File to be parsed
-        std::string file_path = argv[1];
+        //std::string file_path = argv[2];
+        // std::string file_path;
+        // if (argc >= 3) {
+        //     file_path = argv[2];
+        // } else {
+        //     //std::cerr << "File path not provided. Please provide a file path as the third argument." << std::endl;
+        //     file_path = argv[1];
+        //     return 1;
+        // }
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         parser.parse(file_path.c_str());
@@ -102,33 +151,59 @@ int main(int argc, char* argv[]) {
                 std::cout << endl;
 
                 // Prompting user whether they want to run the kml_visualiser
-                char run_kml_visualiser;
+                char run_kml_visualiser = 'n';
                 char custom_coordinates;
                 double referenceLatitude = -33.9545;
                 double referenceLongitude = 18.4563;
                 double referenceAltitude = 0;
-                string outputName;
+                std::string outputName;
+                std::string input;
 
-                std::cout << "Do you want to run the kml_visualiser program? (y/n): ";
-                std::cin >> run_kml_visualiser;
+                std::cout << "Do you want to run the kml_visualiser program? (y/N): ";
+                std::getline(std::cin, input);
+
+                if (!input.empty()) {
+                    run_kml_visualiser = input[0];
+                }
 
                 if (run_kml_visualiser == 'y' || run_kml_visualiser == 'Y') {
-                    std::cout << "Name a KML output file: ";
-                    std::cin >> outputName;
+                    std::cout << "Name a KML output file (defualt file name = file name of fersxml): ";
+                    std::getline(std::cin, outputName);
+
+                    if (outputName.empty()) {
+                        outputName = getFileNameFromPath(file_path);
+                    }
 
                     std::cout << "Do you want to enter custom referenceLatitude, referenceLongitude, and referenceAltitude? (y/n): ";
                     std::cin >> custom_coordinates;
                     std:: cout << "Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E , 0>" << std::endl;
 
                     if (custom_coordinates == 'y' || custom_coordinates == 'Y') {
+                        std::string input;
+
                         std::cout << "Enter referenceLatitude (default: -33.9545): ";
-                        std::cin >> referenceLatitude;
+                        std::cin >> input;
+                        std::istringstream iss_latitude(input);
+                        if (!(iss_latitude >> referenceLatitude)) {
+                            std::cerr << "Invalid input. Please enter a valid number for referenceLatitude." << std::endl;
+                            return 1;
+                        }
 
                         std::cout << "Enter referenceLongitude (default: 18.4563): ";
-                        std::cin >> referenceLongitude;
+                        std::cin >> input;
+                        std::istringstream iss_longitude(input);
+                        if (!(iss_longitude >> referenceLongitude)) {
+                            std::cerr << "Invalid input. Please enter a valid number for referenceLongitude." << std::endl;
+                            return 1;
+                        }
 
                         std::cout << "Enter referenceAltitude (default: 0): ";
-                        std::cin >> referenceAltitude;
+                        std::cin >> input;
+                        std::istringstream iss_altitude(input);
+                        if (!(iss_altitude >> referenceAltitude)) {
+                            std::cerr << "Invalid input. Please enter a valid number for referenceAltitude." << std::endl;
+                            return 1;
+                        }
                     }
 
                     std::string kml_visualiser_command = "./kml_visualiser";

@@ -99,7 +99,7 @@
       <noise_temp>438.4</noise_temp> <!-- 4 dB NF as per the minimal frontend -->
     </receiver>
   </platform>
-  <platform name="OutBoundTarget"> <!-- Target traveling at 210m/s for x seconds -->
+  <platform name="Aeroplane"> <!-- Target traveling at 210m/s for x seconds -->
     <motionpath interpolation="linear">
 	<positionwaypoint>
         <x>50000</x>
@@ -126,8 +126,8 @@
       </rcs>
     </target>
   </platform>
-  <platform name="InBoundTarget"> <!-- Target traveling at 220m/s for x seconds -->
-    <motionpath interpolation="linear">
+  <platform name="Fighter Jet"> <!-- Target traveling at 220m/s for x seconds -->
+    <motionpath interpolation="cubic">
 	<positionwaypoint>
         <x>50000</x>
         <y>-25000</y>
@@ -137,7 +137,7 @@
       <positionwaypoint>
         <x>29000</x>
         <y>-25000</y>
-        <altitude>100</altitude> <!-- End altitude -->
+        <altitude>500</altitude> <!-- End altitude -->
         <time>50</time><!-- Time length of simulation -->
       </positionwaypoint>
     </motionpath>

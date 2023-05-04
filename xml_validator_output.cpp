@@ -75,7 +75,7 @@ void outputElement(DOMElement* element, int indent = 0) {
             //cout << endl;
 
             // Recursively process child elements
-            outputElement(childElement, indent + 2);
+            outputElement(childElement, 0);
         }
         // Output text content of the element
         else if (childNode->getNodeType() == DOMNode::TEXT_NODE) {
@@ -419,7 +419,7 @@ int main(int argc, char* argv[]) {
         }
         // Outputting default values for export parameters
         if (!binarySpecified || !csvSpecified || !xmlSpecified) {
-            std::cout << "  export default values:" << std::endl;
+            std::cout << "  export default values (values chosen):" << std::endl;
             if (!binarySpecified) {
                 std::cout << "      binary: " << (binary ? "true" : "false") << std::endl;
             }

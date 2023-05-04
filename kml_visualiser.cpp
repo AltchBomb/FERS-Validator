@@ -17,6 +17,7 @@
 using namespace std;
 using namespace xercesc;
 
+// Function returns coordinates from positionWayPoint values
 std::string getCoordinatesFromPositionWaypoint(const DOMElement* positionWaypointElement, double referenceLatitude, double referenceLongitude, double referenceAltitude) {
     const XMLCh* xTag = XMLString::transcode("x");
     const XMLCh* yTag = XMLString::transcode("y");
@@ -25,12 +26,6 @@ std::string getCoordinatesFromPositionWaypoint(const DOMElement* positionWaypoin
     double x = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
     double y = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
     double altitude = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
-
-    // Convert the position coordinates to geographic coordinates
-    // Default coordinates
-    // const double referenceLatitude = -33.9545;
-    // const double referenceLongitude = 18.4563;
-    // const double referenceAltitude = 0;
 
     double longitude = referenceLongitude + x / (cos(referenceLatitude * M_PI / 180) * 111319.9);
     double latitude = referenceLatitude + y / 111319.9;
@@ -42,8 +37,57 @@ std::string getCoordinatesFromPositionWaypoint(const DOMElement* positionWaypoin
     return coordinates.str();
 }
 
+// Function calculates the hyperbolic path and updates the longitude and latitude values. *Not a valid interpolation path at this time (04/05/2023)
+void updateLongitudeLatitudeHyperbolic(double& longitude, double& latitude, double t, double a, double b) {
+    double x_hyperbolic = a * std::cosh(t);
+    double y_hyperbolic = b * std::sinh(t);
+
+    // Assuming the start point of the hyperbolic path is at the origin
+    longitude += x_hyperbolic / (cos(latitude * M_PI / 180) * 111319.9);
+    latitude += y_hyperbolic / 111319.9;
+}
+
+// Older implementation (deprecated)
+void updateLongitudeLatitudeCubic2(double &x, double &y, double t, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+    double t2 = t * t;
+    double t3 = t2 * t;
+
+    double h00 = 2.0 * t3 - 3.0 * t2 + 1.0;
+    double h10 = -2.0 * t3 + 3.0 * t2;
+    double h01 = t3 - 2.0 * t2 + t;
+    double h11 = t3 - t2;
+
+    x = h00 * x1 + h10 * x2 + h01 * x3 + h11 * x4;
+    y = h00 * y1 + h10 * y2 + h01 * y3 + h11 * y4;
+}
+
+// Function calculates the cubic path and updates the longitude and latitude values.
+void updateLongitudeLatitudeCubic(double &newLongitude, double &newLatitude, double t, double longitude1, double latitude1, double longitude4, double latitude4) {
+    double t2 = t * t;
+    double t3 = t2 * t;
+
+    double controlPointAngle = 45.0 * M_PI / 180.0; // 45 degrees in radians
+    double controlPointDistance = 111319.9; // Fixed distance for control points (e.g. 111319.9 meters or 1 degree)
+
+    // Calculate control points based on fixed angle and distance
+    double x2 = longitude1 + controlPointDistance * cos(controlPointAngle) / (cos(latitude1 * M_PI / 180) * 111319.9);
+    double y2 = latitude1 + controlPointDistance * sin(controlPointAngle) / 111319.9;
+
+    double x3 = longitude4 - controlPointDistance * cos(controlPointAngle) / (cos(latitude4 * M_PI / 180) * 111319.9);
+    double y3 = latitude4 - controlPointDistance * sin(controlPointAngle) / 111319.9;
+
+    // Perform cubic interpolation
+    double one_minus_t = 1 - t;
+    double one_minus_t2 = one_minus_t * one_minus_t;
+    double one_minus_t3 = one_minus_t2 * one_minus_t;
+
+    newLongitude = one_minus_t3 * longitude1 + 3 * one_minus_t2 * t * x2 + 3 * one_minus_t * t2 * x3 + t3 * longitude4;
+    newLatitude = one_minus_t3 * latitude1 + 3 * one_minus_t2 * t * y2 + 3 * one_minus_t * t2 * y3 + t3 * latitude4;
+}
 
 void processElement(const DOMElement* element, std::ofstream& kmlFile, double referenceLatitude, double referenceLongitude, double referenceAltitude) {
+
+    // Defining constants
     const XMLCh* platformTag = XMLString::transcode("platform");
     const XMLCh* receiverTag = XMLString::transcode("receiver");
     const XMLCh* transmitterTag = XMLString::transcode("transmitter");
@@ -71,12 +115,6 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
         double y = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
         double altitude = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
 
-        // Convert the position coordinates to geographic coordinates
-        // Default values:
-        // const double referenceLatitude = -33.9545;
-        // const double referenceLongitude = 18.4563;
-        // const double referenceAltitude = 0;
-
         // Rough estimation equirectangular projection method.
         double longitude = referenceLongitude + x / (cos(referenceLatitude * M_PI / 180) * 111319.9);
         double latitude = referenceLatitude + y / 111319.9;
@@ -88,8 +126,10 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
         // Extract the interpolation attribute
         const XMLCh* interpolation = motionPathElement->getAttribute(interpolationAttr);
 
-        // Determine if the interpolation is linear or exponential
-        bool isLinearOrExponential = (XMLString::equals(interpolation, XMLString::transcode("linear")) || XMLString::equals(interpolation, XMLString::transcode("exponential")));
+        // Determine if the interpolation is linear, hyperbolic or cubic
+        bool isLinear = (XMLString::equals(interpolation, XMLString::transcode("linear")));
+        bool isHyperbolic = (XMLString::equals(interpolation, XMLString::transcode("hyperbolic")));
+        bool isCubic = (XMLString::equals(interpolation, XMLString::transcode("cubic")));
 
         // Determine the type of placemark to use
         std::string placemarkStyle;
@@ -114,8 +154,8 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
             kmlFile << "    <styleUrl>#target</styleUrl>\n";
         }
 
-        // If the interpolation is linear or exponential, use the gx:Track element
-        if (isLinearOrExponential) {
+        // If the interpolation is linear, hyperbolic or exponential, use the gx:Track element
+        if (isLinear || isHyperbolic || isCubic) {
             kmlFile << "    <gx:Track>\n";
             if (altitudeAboveGround > 0) {
                 kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
@@ -142,9 +182,135 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
                 const XMLCh* timeTag = XMLString::transcode("time");
                 double time = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(timeTag)->item(0)->getTextContent()));
 
-                // Write the time and coordinates to the gx:Track element
-                kmlFile << "        <when>" << time << "</when>\n";
-                kmlFile << "        <gx:coord>" << longitude << " " << latitude << " " << altitudeAboveGround << "</gx:coord>\n";
+                // Check if interpolation is hyperbolic
+                if (isHyperbolic) {
+                    // Calculate the hyperbolic path and update longitude and latitude values accordingly
+                    double a = 0.5; // Set the desired value for 'a' based on the shape of the hyperbola
+                    double b = 0.5; // Set the desired value for 'b' based on the shape of the hyperbola
+                    double t = (double)i / (positionWaypointList->getLength() - 1) * 2.0 * M_PI; // Parameter 't' varies from 0 to 2 * PI
+                    updateLongitudeLatitudeHyperbolic(longitude, latitude, t, a, b);
+                }
+
+                // Check if interpolation is cubic
+                if (isCubic && i + 1 < positionWaypointList->getLength()) {
+                    // Calculate time difference between two consecutive position waypoints
+                    const DOMElement* nextPositionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(i + 1));
+                    double nextTime = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(timeTag)->item(0)->getTextContent()));
+                    double time_diff = nextTime - time;
+
+                    // Extract the position coordinates for the next waypoint
+                    double nextX = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
+                    double nextY = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
+                    double nextAltitude = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
+
+                    // Convert the position coordinates to geographic coordinates
+                    double nextLongitude = referenceLongitude + nextX / (cos(referenceLatitude * M_PI / 180) * 111319.9);
+                    double nextLatitude = referenceLatitude + nextY / 111319.9;
+                    double nextAltitudeAboveGround = nextAltitude - referenceAltitude;
+
+                    // Calculate control points for cubic interpolation
+                    double x1 = longitude;
+                    double y1 = latitude;
+                    double x4 = nextLongitude;
+                    double y4 = nextLatitude;
+                    double newX, newY;
+                    updateLongitudeLatitudeCubic(newX, newY, 0.0, x1, y1, x4, y4); // Calculate first point on cubic curve
+
+                    int num_divisions = 100;
+                    for (int j = 0; j <= num_divisions; ++j) {
+                        double t = (double)j / num_divisions;
+
+                        double newLongitude, newLatitude;
+                        updateLongitudeLatitudeCubic(newLongitude, newLatitude, t, x1, y1, x4, y4);
+
+                        double newAltitudeAboveGround = altitudeAboveGround + t * (nextAltitudeAboveGround - altitudeAboveGround);
+
+                        kmlFile << "        <when>" << time + (double)(j * time_diff) / num_divisions << "</when>\n";
+                        kmlFile << "        <gx:coord>" << newLongitude << " " << newLatitude << " " << newAltitudeAboveGround << "</gx:coord>\n";
+                    }
+                }
+            
+        
+                // Older implementation that makes use of cubic function that isn't contained within start and end points.
+                /*
+                // If the interpolation is linear, hyperbolic or exponential, use the gx:Track element
+                if (isLinear || isHyperbolic || isCubic) {
+                    kmlFile << "    <gx:Track>\n";
+                    if (altitudeAboveGround > 0) {
+                        kmlFile << "        <altitudeMode>relativeToGround</altitudeMode>\n";
+                        kmlFile << "        <extrude>1</extrude>\n";
+                    } else {
+                        kmlFile << "        <altitudeMode>clampToGround</altitudeMode>\n";
+                    }
+
+                    // Iterate through the position waypoints
+                    for (XMLSize_t i = 0; i < positionWaypointList->getLength(); ++i) {
+                        const DOMElement* positionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(i));
+
+                        // Extract the position coordinates
+                        double x = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
+                        double y = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
+                        double altitude = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
+
+                        // Convert the position coordinates to geographic coordinates
+                        double longitude = referenceLongitude + x / (cos(referenceLatitude * M_PI / 180) * 111319.9);
+                        double latitude = referenceLatitude + y / 111319.9;
+                        double altitudeAboveGround = altitude - referenceAltitude;
+
+                        // Extract the time value
+                        const XMLCh* timeTag = XMLString::transcode("time");
+                        double time = std::stod(XMLString::transcode(positionWaypointElement->getElementsByTagName(timeTag)->item(0)->getTextContent()));
+
+                        // Check if interpolation is hyperbolic
+                        if (isHyperbolic) {
+                            // Calculate the hyperbolic path and update longitude and latitude values accordingly
+                            double a = 0.5; // Set the desired value for 'a' based on the shape of the hyperbola
+                            double b = 0.5; // Set the desired value for 'b' based on the shape of the hyperbola
+                            double t = (double)i / (positionWaypointList->getLength() - 1) * 2.0 * M_PI; // Parameter 't' varies from 0 to 2 * PI
+                            updateLongitudeLatitudeHyperbolic(longitude, latitude, t, a, b);
+                        }
+                        
+                        // Check if interpolation is cubic
+                        if (isCubic && i + 1 < positionWaypointList->getLength()) {
+                            // Calculate time difference between two consecutive position waypoints
+                            const DOMElement* nextPositionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(i + 1));
+                            double nextTime = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(timeTag)->item(0)->getTextContent()));
+                            double time_diff = nextTime - time;
+
+                            // Extract the position coordinates for the next waypoint
+                            double nextX = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(xTag)->item(0)->getTextContent()));
+                            double nextY = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(yTag)->item(0)->getTextContent()));
+                            double nextAltitude = std::stod(XMLString::transcode(nextPositionWaypointElement->getElementsByTagName(altitudeTag)->item(0)->getTextContent()));
+
+                            // Calculate next longitude, latitude, and altitude above ground
+                            double nextLongitude = referenceLongitude + nextX / (cos(referenceLatitude * M_PI / 180) * 111319.9);
+                            double nextLatitude = referenceLatitude + nextY / 111319.9;
+                            double nextAltitudeAboveGround = nextAltitude - referenceAltitude;
+
+                            // Calculate control points for cubic interpolation
+                            double x2 = longitude + (nextLongitude - longitude) / 3;
+                            double y2 = latitude + (nextLatitude - latitude) / 3;
+                            double x3 = nextLongitude - (nextLongitude - longitude) / 3;
+                            double y3 = nextLatitude - (nextLatitude - latitude) / 3;
+
+                            int num_divisions = 100;
+                            for (int j = 0; j <= num_divisions; ++j) {
+                                double t = (double)j / num_divisions;
+
+                                double newX, newY;
+                                updateLongitudeLatitudeCubic(newX, newY, t, longitude, latitude, x2, y2, x3, y3, nextLongitude, nextLatitude);
+                                double newAltitudeAboveGround = altitudeAboveGround + t * (nextAltitudeAboveGround - altitudeAboveGround);
+
+                                kmlFile << "        <when>" << time + (double)(j * time_diff) / num_divisions << "</when>\n";
+                                kmlFile << "        <gx:coord>" << newX << " " << newY << " " << newAltitudeAboveGround << "</gx:coord>\n";
+                            }
+                        } */
+
+                else {
+                    // Write the time and coordinates to the gx:Track element
+                    kmlFile << "        <when>" << time << "</when>\n";
+                    kmlFile << "        <gx:coord>" << longitude << " " << latitude << " " << altitudeAboveGround << "</gx:coord>\n";
+                }
             }
 
             kmlFile << "    </gx:Track>\n";
@@ -175,7 +341,7 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
 
         kmlFile << "</Placemark>\n";
 
-        if (isLinearOrExponential) {
+        if (isLinear || isHyperbolic || isCubic) {
             // Get the first and last position waypoints
             const DOMElement* firstPositionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(0));
             const DOMElement* lastPositionWaypointElement = dynamic_cast<const DOMElement*>(positionWaypointList->item(positionWaypointList->getLength() - 1));
