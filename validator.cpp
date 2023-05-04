@@ -174,9 +174,11 @@ int main(int argc, char* argv[]) {
                         outputName = getFileNameFromPath(file_path);
                     }
 
-                    std::cout << "Do you want to enter custom referenceLatitude, referenceLongitude, and referenceAltitude? (y/n): ";
-                    std::cin >> custom_coordinates;
-                    std:: cout << "Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E , 0>" << std::endl;
+                    std::cout << "Do you want to enter custom referenceLatitude, referenceLongitude, and referenceAltitude? (y/N): ";
+                    input.clear();
+                    std::getline(std::cin, input);
+                    custom_coordinates = input.empty() ? 'n' : input[0];
+                    std::cout << "Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E , 0>" << std::endl;
 
                     if (custom_coordinates == 'y' || custom_coordinates == 'Y') {
                         std::string input;
