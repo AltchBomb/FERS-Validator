@@ -9,6 +9,8 @@
 #include <sstream>
 #include <cmath> 
 #include <map>
+#include <algorithm>
+#include <vector>
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -18,6 +20,50 @@
 
 using namespace std;
 using namespace xercesc;
+
+// The following two functions calculate the 3dB drop from the max gain of the antenna gain pattern
+/*Start*/
+double sinc_antenna_gain(double theta, double alpha, double beta, double gamma) {
+    double gain = alpha * std::pow(std::sin(beta * theta) / (beta * theta), gamma);
+    return gain;
+}
+
+double find_3db_drop_angle(double alpha, double beta, double gamma) {
+    const int num_points = 1000;
+    const double pi = 3.14159265358979323846;
+    std::vector<double> theta(num_points);
+    std::vector<double> gain(num_points);
+
+    // Calculate gain values for each angle
+    for (int i = 0; i < num_points; ++i) {
+        theta[i] = -pi + 2.0 * pi * i / (num_points - 1);
+        gain[i] = sinc_antenna_gain(theta[i], alpha, beta, gamma);
+    }
+
+    // Find the maximum gain
+    double max_gain = *std::max_element(gain.begin() + num_points / 2, gain.end());
+
+    // Convert the maximum gain to dB
+    double max_gain_dB = 10.0 * std::log10(max_gain);
+
+    // Find the target gain (3dB drop)
+    double target_gain_dB = max_gain_dB - 3.0;
+    double target_gain = std::pow(10.0, target_gain_dB / 10.0);
+
+    // Find the angle index where the gain is closest to the target gain
+    // Considering only positive angles (from 0 to pi)
+    int idx = std::distance(gain.begin() + num_points / 2, std::min_element(gain.begin() + num_points / 2, gain.end(),
+        [target_gain](double a, double b) { return std::abs(a - target_gain) < std::abs(b - target_gain); }));
+
+    // Get the angle at which the 3dB drop occurs
+    double angle_3dB_drop = theta[idx + num_points / 2];
+
+    // Convert the angle to degrees
+    double angle_3dB_drop_deg = angle_3dB_drop * 180.0 / pi;
+
+    return angle_3dB_drop_deg;
+}
+/*End*/
 
 // Function returns coordinates from positionWayPoint values
 std::string getCoordinatesFromPositionWaypoint(const DOMElement* positionWaypointElement, double referenceLatitude, double referenceLongitude, double referenceAltitude) {
@@ -160,6 +206,21 @@ std::vector<std::pair<double, double>> generate_circle_coordinates(double lat, d
     return circle_coordinates;
 }
 
+// Function to return antenna element with 'sinc' pattern
+const DOMElement* getAntennaElementWithSincPattern(const DOMElement* rootElement) {
+    const XMLCh* antennaTag = XMLString::transcode("antenna");
+    const XMLCh* patternAttribute = XMLString::transcode("pattern");
+    DOMNodeList* antennaList = rootElement->getElementsByTagName(antennaTag);
+
+    for (XMLSize_t i = 0; i < antennaList->getLength(); ++i) {
+        const DOMElement* currentAntennaElement = dynamic_cast<const DOMElement*>(antennaList->item(i));
+        if (XMLString::equals(currentAntennaElement->getAttribute(patternAttribute), XMLString::transcode("sinc"))) {
+            return currentAntennaElement;
+        }
+    }
+    return nullptr;
+}
+
 void processElement(const DOMElement* element, std::ofstream& kmlFile, double referenceLatitude, double referenceLongitude, double referenceAltitude, DOMDocument* document) {
 
     // Defining constants
@@ -173,6 +234,9 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
     const XMLCh* altitudeTag = XMLString::transcode("altitude");
     const XMLCh* motionPathTag = XMLString::transcode("motionpath");
     const XMLCh* interpolationAttr = XMLString::transcode("interpolation");
+    const XMLCh* alphaTag = XMLString::transcode("alpha");
+    const XMLCh* betaTag = XMLString::transcode("beta");
+    const XMLCh* gammaTag = XMLString::transcode("gamma");
 
     // Define maps to store isotropic and patterned antennas
     std::map<std::string, const DOMElement*> isotropic_antennas;
@@ -242,7 +306,7 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
 
         std::cout << isIsotropic << std::endl;
 
-         // If the associated pattern is isotropic, add a circular ring of radius 20 km
+        // If the associated pattern is isotropic, add a circular ring of radius 20 km
         if (isIsotropic) {
            double circle_radius = 20; // Radius in km
             int num_points = 100; // Number of points to form the circle
@@ -282,8 +346,9 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
             std::string coordinates = getCoordinatesFromPositionWaypoint(positionWaypointElement, referenceLatitude, referenceLongitude, referenceAltitude);
 
             // Calculate end coordinates
-            double arrowLength = 10000; // Adjust this value according to the desired length of the arrow
-           // Parse coordinates from the positionWaypoint
+            double arrowLength = 20000; // Adjust this value according to the desired length of the arrow
+
+            // Parse coordinates from the positionWaypoint
             double startLatitude, startLongitude, startAltitude;
             std::istringstream coordinatesStream(coordinates);
             coordinatesStream >> startLongitude;
@@ -292,6 +357,10 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
             coordinatesStream.ignore(1); // skip the comma
             coordinatesStream >> startAltitude;
 
+
+            // Adjust startAzimuth to make 0 degrees point East
+            startAzimuth = startAzimuth + 90;
+
             // Calculate end coordinates
             double destLatitude, destLongitude;
             calculateDestinationCoordinate(startLatitude, startLongitude, startAzimuth, arrowLength, destLatitude, destLongitude);
@@ -299,6 +368,58 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
             std::stringstream endCoordinatesStream;
             endCoordinatesStream << std::fixed << std::setprecision(6) << destLongitude << "," << destLatitude << "," << startAltitude;
             std::string endCoordinates = endCoordinatesStream.str();
+
+            // Define values for testing
+            // double alpha = 1;
+            // double beta = 2;
+            // double gamma = 3.6;
+
+            // Extract the antenna element with pattern="sinc"
+            const DOMElement* sincAntennaElement = getAntennaElementWithSincPattern(document->getDocumentElement());
+
+            // Extract alpha, beta, and gamma values if the antenna element was found
+            if (sincAntennaElement != nullptr) {
+                double alpha = std::stod(XMLString::transcode(sincAntennaElement->getElementsByTagName(alphaTag)->item(0)->getTextContent()));
+                double beta = std::stod(XMLString::transcode(sincAntennaElement->getElementsByTagName(betaTag)->item(0)->getTextContent()));
+                double gamma = std::stod(XMLString::transcode(sincAntennaElement->getElementsByTagName(gammaTag)->item(0)->getTextContent()));
+
+                double angle_3dB_drop_deg = find_3db_drop_angle(alpha, beta, gamma); 
+
+                // Calculate end coordinates for both side lines
+                double sideLine1Azimuth = startAzimuth - angle_3dB_drop_deg;
+                double sideLine2Azimuth = startAzimuth + angle_3dB_drop_deg;
+                double sideLine1DestLatitude, sideLine1DestLongitude;
+                double sideLine2DestLatitude, sideLine2DestLongitude;
+
+                calculateDestinationCoordinate(startLatitude, startLongitude, sideLine1Azimuth, arrowLength, sideLine1DestLatitude, sideLine1DestLongitude);
+                calculateDestinationCoordinate(startLatitude, startLongitude, sideLine2Azimuth, arrowLength, sideLine2DestLatitude, sideLine2DestLongitude);
+
+                std::stringstream sideLine1EndCoordinatesStream, sideLine2EndCoordinatesStream;
+                sideLine1EndCoordinatesStream << std::fixed << std::setprecision(6) << sideLine1DestLongitude << "," << sideLine1DestLatitude << "," << startAltitude;
+                sideLine2EndCoordinatesStream << std::fixed << std::setprecision(6) << sideLine2DestLongitude << "," << sideLine2DestLatitude << "," << startAltitude;
+                std::string sideLine1EndCoordinates = sideLine1EndCoordinatesStream.str();
+                std::string sideLine2EndCoordinates = sideLine2EndCoordinatesStream.str();
+
+                // Add placemarks for side lines
+                for (int i = 1; i <= 2; ++i) {
+                    std::string sideLineName = "Antenna Side Line " + std::to_string(i);
+                    std::string sideLineEndCoordinates = (i == 1) ? sideLine1EndCoordinates : sideLine2EndCoordinates;
+
+                    kmlFile << "<Placemark>\n";
+                    kmlFile << "      <name>" << sideLineName << "</name>\n";
+                    kmlFile << "      <styleUrl>#lineStyleBlue</styleUrl>\n";
+                    kmlFile << "      <LineString>\n";
+                    kmlFile << "            <tessellate>1</tessellate>\n";
+                    kmlFile << "            <coordinates>\n";
+                    kmlFile << "            " + coordinates + " " + sideLineEndCoordinates + "\n";
+                    kmlFile << "            </coordinates>\n";
+                    kmlFile << "      </LineString>\n";
+                    kmlFile << "</Placemark>\n";
+                }
+                
+            } else {
+                std::cerr << "Error: Antenna element with pattern='sinc' not found in the XML file" << std::endl;
+            }
 
             kmlFile << "<Placemark>\n";
             kmlFile << "      <name>Antenna Direction</name>\n";
@@ -504,6 +625,13 @@ void traverseDOMNode(const DOMNode* node, std::ofstream& kmlFile, double referen
 // Main function
 int main(int argc, char* argv[]) {
 
+    double alpha = 1;
+    double beta = 2;
+    double gamma = 3.6;
+
+    double angle_3dB_drop_deg = find_3db_drop_angle(alpha, beta, gamma);
+    std::cout << "3dB drop occurs at: " << angle_3dB_drop_deg << " degrees" << std::endl;
+
     if (argc > 3 && argc < 6) {
         std::cerr << "Usage: " << argv[0] << " <input XML file> <output KML file> [<referenceLatitude> <referenceLongitude> <referenceAltitude>]" << std::endl;
         return 1;
@@ -623,6 +751,12 @@ int main(int argc, char* argv[]) {
         kmlFile << "<Style id=\"lineStyle\">\n";
         kmlFile << "    <LineStyle>\n";
         kmlFile << "        <color>ff0000ff</color>\n";
+        kmlFile << "        <width>2</width>\n";
+        kmlFile << "     </LineStyle>\n";
+        kmlFile << "</Style>\n";
+        kmlFile << "<Style id=\"lineStyleBlue\">\n";
+        kmlFile << "    <LineStyle>\n";
+        kmlFile << "        <color>ffff0000</color>\n";
         kmlFile << "        <width>2</width>\n";
         kmlFile << "     </LineStyle>\n";
         kmlFile << "</Style>\n";

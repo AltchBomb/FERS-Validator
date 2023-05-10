@@ -61,19 +61,6 @@ int main(int argc, char* argv[]) {
     try {
 
         // Check if the user provided the mode argument
-        // std::string mode = "non-verbose";
-        // if (argc >= 3) {
-        //     mode = argv[1];
-        //     if (mode != "-v" && mode != "non-verbose") {
-        //         std::cerr << "Invalid mode argument. Please provide '-v' for verbose or 'non-verbose'." << std::endl;
-        //         return 1;
-        //     }
-        //     if (mode == "-v") {
-        //         mode = "verbose";
-        //     }
-        // } 
-
-        // Check if the user provided the mode argument
         std::string mode = "non-verbose"; // Default mode
         std::string file_path;
 
@@ -115,17 +102,6 @@ int main(int argc, char* argv[]) {
         // error handler instance created and set on the parser.
         MyErrorHandler errorHandler;
         parser.setErrorHandler(&errorHandler);
-
-        // File to be parsed
-        //std::string file_path = argv[2];
-        // std::string file_path;
-        // if (argc >= 3) {
-        //     file_path = argv[2];
-        // } else {
-        //     //std::cerr << "File path not provided. Please provide a file path as the third argument." << std::endl;
-        //     file_path = argv[1];
-        //     return 1;
-        // }
 
         // Establish a DOMDocument object and parse the input FERSXML file:
         parser.parse(file_path.c_str());
