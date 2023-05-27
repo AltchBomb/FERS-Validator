@@ -221,6 +221,7 @@ const DOMElement* getAntennaElementWithSincPattern(const DOMElement* rootElement
     return nullptr;
 }
 
+// Function to process the DOMElement, extract necessary data from FERSXML file, and output accordingly to KML file
 void processElement(const DOMElement* element, std::ofstream& kmlFile, double referenceLatitude, double referenceLongitude, double referenceAltitude, DOMDocument* document) {
 
     // Defining constants
@@ -304,7 +305,8 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
             isIsotropic = isAntennaIsotropic(antennaName, isotropic_antennas);
         }
 
-        std::cout << isIsotropic << std::endl;
+        // Testing if 'isIsotropic' set to True if pattern = isotropic
+        //std::cout << isIsotropic << std::endl;
 
         // If the associated pattern is isotropic, add a circular ring of radius 20 km
         if (isIsotropic) {
@@ -359,7 +361,7 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
 
 
             // Adjust startAzimuth to make 0 degrees point East
-            startAzimuth = startAzimuth + 90;
+            startAzimuth = startAzimuth + 180;
 
             // Calculate end coordinates
             double destLatitude, destLongitude;
@@ -611,6 +613,7 @@ void processElement(const DOMElement* element, std::ofstream& kmlFile, double re
     }
 }
 
+// Function to traverse the DOMNode by recursively calling itself and processElement()
 void traverseDOMNode(const DOMNode* node, std::ofstream& kmlFile, double referenceLatitude, double referenceLongitude, double referenceAltitude, DOMDocument* document) {
     if (node->getNodeType() == DOMNode::ELEMENT_NODE) {
         const DOMElement* element = dynamic_cast<const DOMElement*>(node);
@@ -625,12 +628,12 @@ void traverseDOMNode(const DOMNode* node, std::ofstream& kmlFile, double referen
 // Main function
 int main(int argc, char* argv[]) {
 
-    double alpha = 1;
-    double beta = 2;
-    double gamma = 3.6;
+    // double alpha = 1;
+    // double beta = 2;
+    // double gamma = 3.6;
 
-    double angle_3dB_drop_deg = find_3db_drop_angle(alpha, beta, gamma);
-    std::cout << "3dB drop occurs at: " << angle_3dB_drop_deg << " degrees" << std::endl;
+    // double angle_3dB_drop_deg = find_3db_drop_angle(alpha, beta, gamma);
+    // std::cout << "3dB drop occurs at: " << angle_3dB_drop_deg << " degrees" << std::endl;
 
     if (argc > 3 && argc < 6) {
         std::cerr << "Usage: " << argv[0] << " <input XML file> <output KML file> [<referenceLatitude> <referenceLongitude> <referenceAltitude>]" << std::endl;
@@ -644,7 +647,7 @@ int main(int argc, char* argv[]) {
 
     // Update file_path with command line argument
     string file_path = argv[1];
-    // Setting mode to evironment variable from command line.
+    // Setting mode to evironment variable from command line
     string output_file = argv[2];
     // Setting georgraphical coordinates to command line input
     if (argc == 6) {
@@ -662,16 +665,26 @@ int main(int argc, char* argv[]) {
     }
 
     try {
+
+        // Initializing Xerces-C++ library:
         XMLPlatformUtils::Initialize();
+
+        // A XercesDOMParser object is set along with its features:
         XercesDOMParser parser;
 
         // Error handler configuration
         ErrorHandler* errorHandler = (ErrorHandler*) new HandlerBase();
         parser.setErrorHandler(errorHandler); 
 
+        // Disables validation during parsing.
         parser.setValidationScheme(XercesDOMParser::Val_Never);
+
+        // Namespace set to false
         parser.setDoNamespaces(false);
+
+        // Validation against schema set to false
         parser.setDoSchema(false);
+
         parser.setLoadExternalDTD(false);
 
         // Use file_path from command line argument
@@ -706,7 +719,7 @@ int main(int argc, char* argv[]) {
         kmlFile << "<Document>\n";
         kmlFile << "<name>" << file_path << "</name>\n";
 
-        // Add styles here
+        // KML styles appended to document
         kmlFile << "<Style id=\"receiver\">\n";
         kmlFile << "  <IconStyle>\n";
         kmlFile << "    <Icon>\n";
@@ -761,7 +774,7 @@ int main(int argc, char* argv[]) {
         kmlFile << "     </LineStyle>\n";
         kmlFile << "</Style>\n";
 
-        // Add the Folder element
+        // Folder element appended
         kmlFile << "<Folder>\n";
         kmlFile << "  <name>Reference Coordinate</name>\n";
         kmlFile << "  <description>Placemarks for various elements in the FERSXML file. All Placemarks are situated relative to this reference point.</description>\n";

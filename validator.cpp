@@ -1,4 +1,5 @@
 // FERS input Validator Function
+// Makes calls to xml_validator.cpp and kml_visualiser.cpp
 // Script written by Michael Altshuler 
 // University of Cape Town: ALTMIC003
 
@@ -19,8 +20,6 @@
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
-#include <xercesc/dom/DOMLSSerializer.hpp>
-#include <xercesc/dom/DOMLSOutput.hpp>
 
 using namespace xercesc;
 using namespace std;
@@ -96,7 +95,7 @@ int main(int argc, char* argv[]) {
         // Enables full schema constraint checking during validation.
         parser.setDoSchema(true);
 
-        // Set the custom XSD file for the parser by specifyng the XSD file path and XSD file name
+        // Set the custom XSD file for the parser by specifying the XSD file path and XSD file name
         parser.setExternalNoNamespaceSchemaLocation("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERS-schema/fers-xml.xsd");
 
         // error handler instance created and set on the parser.
@@ -154,7 +153,7 @@ int main(int argc, char* argv[]) {
                     input.clear();
                     std::getline(std::cin, input);
                     custom_coordinates = input.empty() ? 'n' : input[0];
-                    std::cout << "Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E , 0>" << std::endl;
+                    std::cout << "Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E, 0>" << std::endl;
 
                     if (custom_coordinates == 'y' || custom_coordinates == 'Y') {
                         std::string input;
@@ -212,6 +211,10 @@ int main(int argc, char* argv[]) {
                     return 1;
                 }
 
+        }
+
+        else {
+            std::cout << "FERSXML invalid: Take note of given errors and warnings above." << std::endl;
         }
 
             // Function call deallocates memory associated with he parsed FERSXML document.

@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+<Document>
+<name>FERSXML-example/SingleSimDualTargetTest.fersxml</name>
+<Style id="receiver">
+  <IconStyle>
+    <Icon>
+      <href>https://cdn-icons-png.flaticon.com/512/645/645436.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+<Style id="transmitter">
+  <IconStyle>
+    <Icon>
+      <href>https://cdn-icons-png.flaticon.com/128/224/224666.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+<Style id="target">
+  <IconStyle>
+    <Icon>
+      <href>https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Target_red_dot1.svg/1200px-Target_red_dot1.svg.png</href>
+    </Icon>
+  </IconStyle>
+  <LineStyle>
+    <width>2</width>
+  </LineStyle>
+</Style>
+<Style id="translucentPolygon">
+    <LineStyle>
+        <color>ff0000ff</color>
+        <width>2</width>
+    </LineStyle>
+    <PolyStyle>
+        <color>00ffffff</color> <!-- RGBA: 50% transparent white --> 
+     </PolyStyle>
+</Style>
+<Style id="arrowStyle">
+    <IconStyle>
+        <Icon>
+            <href>http://maps.google.com/mapfiles/kml/shapes/arrow.png</href>
+        </Icon>
+        <scale>0.5</scale>
+    </IconStyle>
+</Style>
+<Style id="lineStyle">
+    <LineStyle>
+        <color>ff0000ff</color>
+        <width>2</width>
+     </LineStyle>
+</Style>
+<Style id="lineStyleBlue">
+    <LineStyle>
+        <color>ffff0000</color>
+        <width>2</width>
+     </LineStyle>
+</Style>
+<Folder>
+  <name>Reference Coordinate</name>
+  <description>Placemarks for various elements in the FERSXML file. All Placemarks are situated relative to this reference point.</description>
+  <LookAt>
+    <longitude>-74.006</longitude>
+    <latitude>40.7128</latitude>
+    <altitude>0</altitude>
+    <heading>-148.4122922628044</heading>
+    <tilt>40.5575073395506</tilt>
+    <range>10000</range>
+  </LookAt>
+<Placemark>
+    <name>Isotropic pattern range</name>
+    <styleUrl>#translucentPolygon</styleUrl>
+    <Polygon>
+        <extrude>1</extrude>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <outerBoundaryIs>
+            <LinearRing>
+                <coordinates>
+                    -74.006,40.8927,1000
+                    -73.9911,40.8923,1000
+                    -73.9762,40.8912,1000
+                    -73.9614,40.8895,1000
+                    -73.9468,40.887,1000
+                    -73.9325,40.8838,1000
+                    -73.9184,40.88,1000
+                    -73.9047,40.8755,1000
+                    -73.8914,40.8704,1000
+                    -73.8786,40.8646,1000
+                    -73.8662,40.8582,1000
+                    -73.8544,40.8513,1000
+                    -73.8432,40.8438,1000
+                    -73.8327,40.8358,1000
+                    -73.8228,40.8273,1000
+                    -73.8137,40.8184,1000
+                    -73.8054,40.809,1000
+                    -73.7978,40.7993,1000
+                    -73.791,40.7892,1000
+                    -73.7852,40.7788,1000
+                    -73.7801,40.7682,1000
+                    -73.776,40.7573,1000
+                    -73.7728,40.7463,1000
+                    -73.7705,40.7351,1000
+                    -73.7691,40.7239,1000
+                    -73.7687,40.7126,1000
+                    -73.7692,40.7013,1000
+                    -73.7707,40.69,1000
+                    -73.773,40.6789,1000
+                    -73.7763,40.6678,1000
+                    -73.7805,40.657,1000
+                    -73.7856,40.6464,1000
+                    -73.7915,40.636,1000
+                    -73.7983,40.626,1000
+                    -73.8059,40.6163,1000
+                    -73.8143,40.6069,1000
+                    -73.8235,40.598,1000
+                    -73.8333,40.5895,1000
+                    -73.8439,40.5816,1000
+                    -73.8551,40.5741,1000
+                    -73.8668,40.5672,1000
+                    -73.8791,40.5609,1000
+                    -73.892,40.5551,1000
+                    -73.9052,40.55,1000
+                    -73.9189,40.5455,1000
+                    -73.9329,40.5417,1000
+                    -73.9471,40.5386,1000
+                    -73.9617,40.5361,1000
+                    -73.9763,40.5344,1000
+                    -73.9911,40.5333,1000
+                    -74.006,40.5329,1000
+                    -74.0209,40.5333,1000
+                    -74.0357,40.5344,1000
+                    -74.0503,40.5361,1000
+                    -74.0649,40.5386,1000
+                    -74.0791,40.5417,1000
+                    -74.0931,40.5455,1000
+                    -74.1068,40.55,1000
+                    -74.12,40.5551,1000
+                    -74.1329,40.5609,1000
+                    -74.1452,40.5672,1000
+                    -74.1569,40.5741,1000
+                    -74.1681,40.5816,1000
+                    -74.1787,40.5895,1000
+                    -74.1885,40.598,1000
+                    -74.1977,40.6069,1000
+                    -74.2061,40.6163,1000
+                    -74.2137,40.626,1000
+                    -74.2205,40.636,1000
+                    -74.2264,40.6464,1000
+                    -74.2315,40.657,1000
+                    -74.2357,40.6678,1000
+                    -74.239,40.6789,1000
+                    -74.2413,40.69,1000
+                    -74.2428,40.7013,1000
+                    -74.2433,40.7126,1000
+                    -74.2429,40.7239,1000
+                    -74.2415,40.7351,1000
+                    -74.2392,40.7463,1000
+                    -74.236,40.7573,1000
+                    -74.2319,40.7682,1000
+                    -74.2268,40.7788,1000
+                    -74.221,40.7892,1000
+                    -74.2142,40.7993,1000
+                    -74.2066,40.809,1000
+                    -74.1983,40.8184,1000
+                    -74.1892,40.8273,1000
+                    -74.1793,40.8358,1000
+                    -74.1688,40.8438,1000
+                    -74.1576,40.8513,1000
+                    -74.1458,40.8582,1000
+                    -74.1334,40.8646,1000
+                    -74.1206,40.8704,1000
+                    -74.1073,40.8755,1000
+                    -74.0936,40.88,1000
+                    -74.0795,40.8838,1000
+                    -74.0652,40.887,1000
+                    -74.0506,40.8895,1000
+                    -74.0358,40.8912,1000
+                    -74.0209,40.8923,1000
+                    -74.006,40.8927,1000
+                </coordinates>
+            </LinearRing>
+        </outerBoundaryIs>
+    </Polygon>
+</Placemark>
+<Placemark>
+    <name>PrieskaTx</name>
+    <description></description>
+    <styleUrl>#transmitter</styleUrl>
+    <LookAt>
+        <longitude>-74.006</longitude>
+        <latitude>40.7128</latitude>
+        <altitude>1000</altitude>
+        <heading>-148.4122922628044</heading>
+        <tilt>40.5575073395506</tilt>
+        <range>500.6566641072245</range>
+    </LookAt>
+    <Point>
+        <coordinates>-74.006,40.7128,1000</coordinates>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+    </Point>
+</Placemark>
+<Placemark>
+      <name>Antenna Side Line 1</name>
+      <styleUrl>#lineStyleBlue</styleUrl>
+      <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+            -74.006000,41.161956,0.000000 -74.212430,41.071595,0.000000
+            </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+      <name>Antenna Side Line 2</name>
+      <styleUrl>#lineStyleBlue</styleUrl>
+      <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+            -74.006000,41.161956,0.000000 -74.212999,41.251948,0.000000
+            </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+      <name>Antenna Direction</name>
+      <styleUrl>#lineStyle</styleUrl>
+      <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+            -74.006000,41.161956,0.000000 -74.244910,41.161709,0.000000
+            </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+      <name>Antenna Arrow</name>
+      <styleUrl>#arrowStyle</styleUrl>
+      <Point>
+          <coordinates>-74.244910,41.161709,0.000000</coordinates>
+      </Point>
+      <IconStyle>
+          <heading>270</heading>
+      </IconStyle>
+</Placemark>
+<Placemark>
+    <name>RefRx</name>
+    <description></description>
+    <styleUrl>#receiver</styleUrl>
+    <LookAt>
+        <longitude>-74.006</longitude>
+        <latitude>41.162</latitude>
+        <altitude>0</altitude>
+        <heading>-148.4122922628044</heading>
+        <tilt>40.5575073395506</tilt>
+        <range>500.6566641072245</range>
+    </LookAt>
+    <Point>
+        <coordinates>-74.006,41.162,0</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+      <name>Antenna Side Line 1</name>
+      <styleUrl>#lineStyleBlue</styleUrl>
+      <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+            -74.006000,41.161965,0.000000 -73.886503,41.006278,0.000000
+            </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+      <name>Antenna Side Line 2</name>
+      <styleUrl>#lineStyleBlue</styleUrl>
+      <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+            -74.006000,41.161965,0.000000 -74.125497,41.006278,0.000000
+            </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+      <name>Antenna Direction</name>
+      <styleUrl>#lineStyle</styleUrl>
+      <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+            -74.006000,41.161965,0.000000 -74.006000,40.982101,0.000000
+            </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+      <name>Antenna Arrow</name>
+      <styleUrl>#arrowStyle</styleUrl>
+      <Point>
+          <coordinates>-74.006000,40.982101,0.000000</coordinates>
+      </Point>
+      <IconStyle>
+          <heading>180</heading>
+      </IconStyle>
+</Placemark>
+<Placemark>
+    <name>SurvRx</name>
+    <description></description>
+    <styleUrl>#receiver</styleUrl>
+    <LookAt>
+        <longitude>-74.006</longitude>
+        <latitude>41.162</latitude>
+        <altitude>0</altitude>
+        <heading>-148.4122922628044</heading>
+        <tilt>40.5575073395506</tilt>
+        <range>500.6566641072245</range>
+    </LookAt>
+    <Point>
+        <coordinates>-74.006,41.162,0</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>Aeroplane</name>
+    <description></description>
+    <styleUrl>#target</styleUrl>
+    <gx:Track>
+        <altitudeMode>clampToGround</altitudeMode>
+        <when>0</when>
+        <gx:coord>-73.4134 41.162 0</gx:coord>
+        <when>50</when>
+        <gx:coord>-73.2831 41.162 0</gx:coord>
+    </gx:Track>
+</Placemark>
+<Placemark>
+    <name>Start: Aeroplane</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-73.413437,41.161956,0.000000</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>End: Aeroplane</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-73.283073,41.161956,0.000000</coordinates>
+        <altitudeMode>clampToGround</altitudeMode>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>Fighter Jet</name>
+    <description></description>
+    <styleUrl>#target</styleUrl>
+    <gx:Track>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+        <when>0</when>
+        <gx:coord>-73.4134 40.4882 100</gx:coord>
+        <when>0.5</when>
+        <gx:coord>-73.3865 40.5088 104</gx:coord>
+        <when>1</when>
+        <gx:coord>-73.3612 40.5281 108</gx:coord>
+        <when>1.5</when>
+        <gx:coord>-73.3378 40.5462 112</gx:coord>
+        <when>2</when>
+        <gx:coord>-73.3161 40.5632 116</gx:coord>
+        <when>2.5</when>
+        <gx:coord>-73.296 40.5789 120</gx:coord>
+        <when>3</when>
+        <gx:coord>-73.2776 40.5935 124</gx:coord>
+        <when>3.5</when>
+        <gx:coord>-73.2608 40.607 128</gx:coord>
+        <when>4</when>
+        <gx:coord>-73.2455 40.6194 132</gx:coord>
+        <when>4.5</when>
+        <gx:coord>-73.2318 40.6307 136</gx:coord>
+        <when>5</when>
+        <gx:coord>-73.2196 40.641 140</gx:coord>
+        <when>5.5</when>
+        <gx:coord>-73.2088 40.6502 144</gx:coord>
+        <when>6</when>
+        <gx:coord>-73.1995 40.6585 148</gx:coord>
+        <when>6.5</when>
+        <gx:coord>-73.1915 40.6658 152</gx:coord>
+        <when>7</when>
+        <gx:coord>-73.1849 40.6721 156</gx:coord>
+        <when>7.5</when>
+        <gx:coord>-73.1796 40.6775 160</gx:coord>
+        <when>8</when>
+        <gx:coord>-73.1756 40.6821 164</gx:coord>
+        <when>8.5</when>
+        <gx:coord>-73.1728 40.6858 168</gx:coord>
+        <when>9</when>
+        <gx:coord>-73.1712 40.6886 172</gx:coord>
+        <when>9.5</when>
+        <gx:coord>-73.1708 40.6906 176</gx:coord>
+        <when>10</when>
+        <gx:coord>-73.1716 40.6919 180</gx:coord>
+        <when>10.5</when>
+        <gx:coord>-73.1734 40.6923 184</gx:coord>
+        <when>11</when>
+        <gx:coord>-73.1762 40.6921 188</gx:coord>
+        <when>11.5</when>
+        <gx:coord>-73.1801 40.6911 192</gx:coord>
+        <when>12</when>
+        <gx:coord>-73.185 40.6894 196</gx:coord>
+        <when>12.5</when>
+        <gx:coord>-73.1908 40.6871 200</gx:coord>
+        <when>13</when>
+        <gx:coord>-73.1976 40.6841 204</gx:coord>
+        <when>13.5</when>
+        <gx:coord>-73.2052 40.6806 208</gx:coord>
+        <when>14</when>
+        <gx:coord>-73.2136 40.6764 212</gx:coord>
+        <when>14.5</when>
+        <gx:coord>-73.2229 40.6717 216</gx:coord>
+        <when>15</when>
+        <gx:coord>-73.2329 40.6664 220</gx:coord>
+        <when>15.5</when>
+        <gx:coord>-73.2436 40.6606 224</gx:coord>
+        <when>16</when>
+        <gx:coord>-73.2551 40.6544 228</gx:coord>
+        <when>16.5</when>
+        <gx:coord>-73.2672 40.6477 232</gx:coord>
+        <when>17</when>
+        <gx:coord>-73.2799 40.6405 236</gx:coord>
+        <when>17.5</when>
+        <gx:coord>-73.2932 40.633 240</gx:coord>
+        <when>18</when>
+        <gx:coord>-73.307 40.6251 244</gx:coord>
+        <when>18.5</when>
+        <gx:coord>-73.3214 40.6168 248</gx:coord>
+        <when>19</when>
+        <gx:coord>-73.3362 40.6082 252</gx:coord>
+        <when>19.5</when>
+        <gx:coord>-73.3515 40.5992 256</gx:coord>
+        <when>20</when>
+        <gx:coord>-73.3672 40.59 260</gx:coord>
+        <when>20.5</when>
+        <gx:coord>-73.3832 40.5806 264</gx:coord>
+        <when>21</when>
+        <gx:coord>-73.3996 40.5709 268</gx:coord>
+        <when>21.5</when>
+        <gx:coord>-73.4162 40.561 272</gx:coord>
+        <when>22</when>
+        <gx:coord>-73.4331 40.5509 276</gx:coord>
+        <when>22.5</when>
+        <gx:coord>-73.4502 40.5407 280</gx:coord>
+        <when>23</when>
+        <gx:coord>-73.4675 40.5304 284</gx:coord>
+        <when>23.5</when>
+        <gx:coord>-73.485 40.5199 288</gx:coord>
+        <when>24</when>
+        <gx:coord>-73.5026 40.5094 292</gx:coord>
+        <when>24.5</when>
+        <gx:coord>-73.5202 40.4988 296</gx:coord>
+        <when>25</when>
+        <gx:coord>-73.5379 40.4882 300</gx:coord>
+        <when>25.5</when>
+        <gx:coord>-73.5555 40.4776 304</gx:coord>
+        <when>26</when>
+        <gx:coord>-73.5732 40.467 308</gx:coord>
+        <when>26.5</when>
+        <gx:coord>-73.5907 40.4565 312</gx:coord>
+        <when>27</when>
+        <gx:coord>-73.6082 40.4461 316</gx:coord>
+        <when>27.5</when>
+        <gx:coord>-73.6255 40.4357 320</gx:coord>
+        <when>28</when>
+        <gx:coord>-73.6426 40.4255 324</gx:coord>
+        <when>28.5</when>
+        <gx:coord>-73.6595 40.4154 328</gx:coord>
+        <when>29</when>
+        <gx:coord>-73.6762 40.4055 332</gx:coord>
+        <when>29.5</when>
+        <gx:coord>-73.6926 40.3959 336</gx:coord>
+        <when>30</when>
+        <gx:coord>-73.7086 40.3864 340</gx:coord>
+        <when>30.5</when>
+        <gx:coord>-73.7243 40.3772 344</gx:coord>
+        <when>31</when>
+        <gx:coord>-73.7395 40.3683 348</gx:coord>
+        <when>31.5</when>
+        <gx:coord>-73.7544 40.3597 352</gx:coord>
+        <when>32</when>
+        <gx:coord>-73.7687 40.3514 356</gx:coord>
+        <when>32.5</when>
+        <gx:coord>-73.7826 40.3434 360</gx:coord>
+        <when>33</when>
+        <gx:coord>-73.7959 40.3359 364</gx:coord>
+        <when>33.5</when>
+        <gx:coord>-73.8086 40.3288 368</gx:coord>
+        <when>34</when>
+        <gx:coord>-73.8207 40.322 372</gx:coord>
+        <when>34.5</when>
+        <gx:coord>-73.8321 40.3158 376</gx:coord>
+        <when>35</when>
+        <gx:coord>-73.8429 40.31 380</gx:coord>
+        <when>35.5</when>
+        <gx:coord>-73.8529 40.3048 384</gx:coord>
+        <when>36</when>
+        <gx:coord>-73.8621 40.3001 388</gx:coord>
+        <when>36.5</when>
+        <gx:coord>-73.8706 40.2959 392</gx:coord>
+        <when>37</when>
+        <gx:coord>-73.8782 40.2923 396</gx:coord>
+        <when>37.5</when>
+        <gx:coord>-73.8849 40.2893 400</gx:coord>
+        <when>38</when>
+        <gx:coord>-73.8907 40.287 404</gx:coord>
+        <when>38.5</when>
+        <gx:coord>-73.8956 40.2854 408</gx:coord>
+        <when>39</when>
+        <gx:coord>-73.8995 40.2844 412</gx:coord>
+        <when>39.5</when>
+        <gx:coord>-73.9024 40.2841 416</gx:coord>
+        <when>40</when>
+        <gx:coord>-73.9042 40.2846 420</gx:coord>
+        <when>40.5</when>
+        <gx:coord>-73.9049 40.2858 424</gx:coord>
+        <when>41</when>
+        <gx:coord>-73.9045 40.2878 428</gx:coord>
+        <when>41.5</when>
+        <gx:coord>-73.9029 40.2907 432</gx:coord>
+        <when>42</when>
+        <gx:coord>-73.9002 40.2944 436</gx:coord>
+        <when>42.5</when>
+        <gx:coord>-73.8961 40.2989 440</gx:coord>
+        <when>43</when>
+        <gx:coord>-73.8908 40.3043 444</gx:coord>
+        <when>43.5</when>
+        <gx:coord>-73.8842 40.3107 448</gx:coord>
+        <when>44</when>
+        <gx:coord>-73.8763 40.318 452</gx:coord>
+        <when>44.5</when>
+        <gx:coord>-73.8669 40.3262 456</gx:coord>
+        <when>45</when>
+        <gx:coord>-73.8562 40.3355 460</gx:coord>
+        <when>45.5</when>
+        <gx:coord>-73.8439 40.3458 464</gx:coord>
+        <when>46</when>
+        <gx:coord>-73.8302 40.3571 468</gx:coord>
+        <when>46.5</when>
+        <gx:coord>-73.815 40.3695 472</gx:coord>
+        <when>47</when>
+        <gx:coord>-73.7982 40.3829 476</gx:coord>
+        <when>47.5</when>
+        <gx:coord>-73.7797 40.3975 480</gx:coord>
+        <when>48</when>
+        <gx:coord>-73.7597 40.4133 484</gx:coord>
+        <when>48.5</when>
+        <gx:coord>-73.738 40.4302 488</gx:coord>
+        <when>49</when>
+        <gx:coord>-73.7145 40.4483 492</gx:coord>
+        <when>49.5</when>
+        <gx:coord>-73.6893 40.4676 496</gx:coord>
+        <when>50</when>
+        <gx:coord>-73.6623 40.4882 500</gx:coord>
+        <when>50</when>
+        <gx:coord>-73.6623 40.4882 500</gx:coord>
+    </gx:Track>
+</Placemark>
+<Placemark>
+    <name>Start: Fighter Jet</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-73.413437,40.488222,100.000000</coordinates>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+    </Point>
+</Placemark>
+<Placemark>
+    <name>End: Fighter Jet</name>
+    <styleUrl>#target</styleUrl>
+    <Point>
+        <coordinates>-73.662313,40.488222,500.000000</coordinates>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <extrude>1</extrude>
+    </Point>
+</Placemark>
+</Folder>
+</Document>
+</kml>

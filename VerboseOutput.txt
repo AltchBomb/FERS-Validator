@@ -1,0 +1,173 @@
+Warning: element 'waveform' is referenced in a content model but was never declared at line 5, column 47
+Warning: element 'jitter' is referenced in a content model but was never declared at line 5, column 47
+
+User is in verbose mode.
+
+XML document is valid
+  
+  parameters          :  
+    starttime           :  0  
+    endtime             :  50  
+    interprate          :  1000  
+    rate                :  200000  
+    export              : binary=true; csv=false; xml=false  
+    adc_bits            :  16  
+    
+  pulse               : filename=../../Waveforms/BroadbandNoiseNormalised.h5; name=TxWaveform; type=file  
+    power               :  14760     
+    carrier             :  94e6     
+    
+  timing              : name=TxClock  
+    frequency           :  200000  
+        
+ timing              : name=RxClock  
+    frequency           :  200000  
+    freq_offset         :  0.01  
+    
+  antenna             : name=RxYagiAntenna; pattern=sinc  
+    alpha               :  5.2481  
+    beta                :  2  
+    gamma               :  3.6  
+    efficiency          :  1     
+    
+  antenna             : name=TxIsoAntenna; pattern=isotropic  
+    efficiency          :  1  
+    
+    
+  platform            : name=PrieskaTx  
+    motionpath          : interpolation=static  
+      positionwaypoint    :  
+        x                   :  0     
+        y                   :  0  
+        altitude            :  1000  
+        time                :  0  
+        
+      
+    fixedrotation       :     
+      startazimuth        :  0  
+      startelevation      :  0  
+      azimuthrate         :  0  
+      elevationrate       :  0  
+      
+    transmitter         : antenna=TxIsoAntenna; name=Tx; pulse=TxWaveform; timing=TxClock; type=continuous  
+      prf                 :  0.001  
+      
+    
+          
+  platform            : name=RefRx  
+    motionpath          : interpolation=static  
+      positionwaypoint    :  
+        x                   :  0  
+        y                   :  50000  
+        altitude            :  0  
+        time                :  0  
+        
+      
+    fixedrotation       :  
+      startazimuth        :  90  
+      startelevation      :  0  
+      azimuthrate         :  0  
+      elevationrate       :  0  
+      
+    receiver            : antenna=RxYagiAntenna; name=RefRx; timing=RxClock; type=continuous  
+      window_skip         :  0  
+      window_length       :  50  
+      prf                 :  0.001  
+      noise_temp          :  438.4  
+      
+    
+  platform            : name=SurvRx  
+    motionpath          : interpolation=static  
+      positionwaypoint    :  
+        x                   :  0  
+        y                   :  50001  
+        altitude            :  0     
+        time                :  0  
+        
+      
+    fixedrotation       :  
+      startazimuth        :  0  
+      startelevation      :  0  
+      azimuthrate         :  0  
+      elevationrate       :  0  
+      
+    receiver            : antenna=RxYagiAntenna; name=SurvRx; timing=RxClock; type=continuous  
+      window_skip         :  0  
+      window_length       :  50     
+      prf                 :  0.001  
+      noise_temp          :  438.4     
+      
+    
+  platform            : name=Aeroplane     
+    motionpath          : interpolation=linear  
+        positionwaypoint    :  
+        x                   :  50000  
+        y                   :  50000  
+        altitude            :  0  
+        time                :  0  
+        
+      positionwaypoint    :  
+        x                   :  61000  
+        y                   :  50000  
+        altitude            :  0     
+        time                :  50  
+        
+      
+    fixedrotation       :  
+      startazimuth        :  0.0  
+      startelevation      :  0.0  
+      azimuthrate         :  0  
+      elevationrate       :  0  
+      
+    target              : name=Target1  
+      rcs                 : type=isotropic  
+        value               :  200  
+        
+      
+    
+  platform            : name=Fighter Jet     
+    motionpath          : interpolation=cubic  
+        positionwaypoint    :  
+        x                   :  50000  
+        y                   :  -25000  
+        altitude            :  100  
+        time                :  0  
+        
+      positionwaypoint    :  
+        x                   :  29000  
+        y                   :  -25000  
+        altitude            :  500     
+        time                :  50  
+        
+      
+    fixedrotation       :  
+      startazimuth        :  0.0  
+      startelevation      :  0.0  
+      azimuthrate         :  0  
+      elevationrate       :  0  
+      
+    target              : name=Target2  
+      rcs                 : type=isotropic  
+        value               :  200  
+        
+      
+    
+The following default values have been applied to the FERS simulation, unless otherwise specified:
+<parameters> defaults:
+  c = 2.99792e+08 m.s^-1
+  oversample = 1
+
+  export values (values chosen):
+      binary: true
+      csv: false
+      xml: false
+
+<timing> defaults:
+  phase_offset = 0
+
+
+Do you want to run the kml_visualiser program? (y/N): y
+Name a KML output file (defualt file name = file name of fersxml): 
+Do you want to enter custom referenceLatitude, referenceLongitude, and referenceAltitude? (y/N): 
+Default coordinates set to University of Cape Town: <133.9577° S, 18.4612° E , 0>
+SingleSimDualTargetTest.kml outputted to current working directory.

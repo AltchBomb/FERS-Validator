@@ -7,12 +7,10 @@
   <parameters>
     <starttime>0</starttime>
     <endtime>50</endtime>
-    <c>299792458</c>
     <interprate>1000</interprate>
     <rate>200000</rate>
     <export binary="true" csv="false" xml="false"/>
     <adc_bits>16</adc_bits>
-    <oversample>1</oversample>
   </parameters>
   <pulse name="TxWaveform" type="file" filename="../../Waveforms/BroadbandNoiseNormalised.h5">
     <power>14760</power> <!-- 9 kW * 2.15 dB (to create EIRP of dipole type pattern) -->
@@ -65,7 +63,7 @@
       </positionwaypoint>
     </motionpath>
     <fixedrotation>
-      <startazimuth>0</startazimuth><!-- heading of 42 degrees towards Prieska -->
+      <startazimuth>90</startazimuth><!-- heading of 42 degrees towards Prieska -->
       <startelevation>0</startelevation><!-- horizontal -->
       <azimuthrate>0</azimuthrate>
       <elevationrate>0</elevationrate>
@@ -87,7 +85,7 @@
       </positionwaypoint>
     </motionpath>
     <fixedrotation>
-      <startazimuth>180</startazimuth><!-- towards middle of core site - 180 degrees from PrieskaTx -->
+      <startazimuth>0</startazimuth><!-- towards middle of core site - 180 degrees from PrieskaTx -->
       <startelevation>0</startelevation><!-- 10 degrees slight upwards tilt-->
       <azimuthrate>0</azimuthrate>
       <elevationrate>0</elevationrate>

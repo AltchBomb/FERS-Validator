@@ -1,5 +1,5 @@
 // FERS input Validator Function sub-system
-// Outputs FERSXML contents to console in readbale format.
+// Outputs FERSXML contents to console in readbale format as well as default values not specified in FERSXML file.
 // Script written by Michael Altshuler 
 // University of Cape Town: ALTMIC003
 
@@ -136,15 +136,23 @@ int main(int argc, char* argv[]) {
     string mode = argv[2];
 
     try {
-        XMLPlatformUtils::Initialize();
-        //std::cout << mode << std::endl;
-        XercesDOMParser parser;
-        parser.setValidationScheme(XercesDOMParser::Val_Never);
-        parser.setDoNamespaces(false);
-        parser.setDoSchema(false);
-        parser.setLoadExternalDTD(false);
 
-        //parser.parse("/Users/michaelaltshuler/Documents/5th Year/EEE4022F:Thesis/FERS Features/FERS Validator/FERSXML-example/SingleSimDualTargetTest.fersxml");
+        // Initializing Xerces-C++ library:
+        XMLPlatformUtils::Initialize();
+        
+        // A XercesDOMParser object is set along with its features:
+        XercesDOMParser parser;
+
+        // Disables validation during parsing.
+        parser.setValidationScheme(XercesDOMParser::Val_Never);
+
+        // Namespace set to false
+        parser.setDoNamespaces(false);
+
+        // Disabled validation against an XSD Schema file.
+        parser.setDoSchema(false);
+
+        parser.setLoadExternalDTD(false);
 
         // Use file_path from command line argument
         parser.parse(file_path.c_str()); 
@@ -417,9 +425,20 @@ int main(int argc, char* argv[]) {
         if (rate == default_rate && rateNodes->getLength() == 0) {
             std::cout << "  rate = " << rate << std::endl;
         }
+        
+        // Outputting default value for adc_bits
+        if (adc_bits == default_adc_bits && adc_bitsNodes->getLength() == 0) {
+            std::cout << "  adc_bits = " << adc_bits << std::endl;
+        }
+        // Outputting default value for oversample
+        if (oversample == default_oversample && oversampleNodes->getLength() == 0) {
+            std::cout << "  oversample = " << oversample << std::endl;
+        }
+        std::cout << "" << std::endl;
+
         // Outputting default values for export parameters
         if (!binarySpecified || !csvSpecified || !xmlSpecified) {
-            std::cout << "  export default values (values chosen):" << std::endl;
+            std::cout << "  export values (values chosen):" << std::endl;
             if (!binarySpecified) {
                 std::cout << "      binary: " << (binary ? "true" : "false") << std::endl;
             }
@@ -430,14 +449,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "      xml: " << (xml ? "true" : "false") << std::endl;
             }
         }
-        // Outputting default value for adc_bits
-        if (adc_bits == default_adc_bits && adc_bitsNodes->getLength() == 0) {
-            std::cout << "  adc_bits = " << adc_bits << std::endl;
-        }
-        // Outputting default value for oversample
-        if (oversample == default_oversample && oversampleNodes->getLength() == 0) {
-            std::cout << "  oversample = " << oversample << std::endl;
-        }
+        
         std::cout << "" << std::endl;
 
         // <timing> defaults:
@@ -457,7 +469,7 @@ int main(int argc, char* argv[]) {
 
         cout << endl;
         
-        // Output element counts: Transmitters, Receivers, Targets only if in non-verbose mode:
+        // Output element counts Transmitters, Receivers, Targets only if in non-verbose mode:
         if (std::strcmp(mode.c_str(), "non-verbose") == 0) {
             std::cout << "Simulation Summary:" << std::endl;
             elementCount(rootElement);

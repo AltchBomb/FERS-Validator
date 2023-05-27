@@ -1,5 +1,6 @@
 <!-- DTD for FERS XML simulation script files. Script files must conform to this DTD or simulation results are likely to be unreliable. -->
 <!-- Marc Brooker mbrooker@rrsg.ee.uct.ac.za -->
+<!-- Edited to accommodate for the addition of specific elements by Michael Altshuler for the purpose of FERSXML Validation and Visualisation. -->
 <!ELEMENT simulation (parameters,pulse*,waveform*,timing+,antenna+,platform+,include*)>
 <!ATTLIST simulation name CDATA #REQUIRED>
 
